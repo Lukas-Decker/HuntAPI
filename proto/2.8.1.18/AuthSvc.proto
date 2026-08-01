@@ -1,0 +1,10 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "AuthToken.proto";
+import "ServiceExt.proto";
+
+service AuthSvc {
+  rpc GetToken(google.protobuf.Empty) returns (FP.Hunt.AuthToken);
+}

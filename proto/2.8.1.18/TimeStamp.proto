@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP;
+
+import "google/protobuf/timestamp.proto";
+
+message TimeStamp {
+  bool IsUndefined = 1;
+  google.protobuf.Timestamp Timestamp = 2;
+}

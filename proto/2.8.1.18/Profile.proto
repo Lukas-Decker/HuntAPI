@@ -1,0 +1,25 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "MetaCommon.proto";
+import "MetaBloodLine.proto";
+
+message QueryProfileReq {
+  int64 profile_id = 1;
+  string blood_line_name = 2;
+}
+message GetProfileRsp {
+  bool ok = 1;
+  FP.Hunt.MetaSerBloodLineFull blood_line = 3;
+  FP.Hunt.MetaConfig meta_config = 4;
+  bool suspicious = 5;
+}
+message RegionList {
+  repeated string regions = 1;
+}
+message IsInLocalMissionReq {
+  bool in_mission = 1;
+}
+message AllowCrossplayReq {
+  bool allow_crossplay = 1;
+}

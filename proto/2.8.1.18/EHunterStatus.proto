@@ -1,0 +1,11 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum EHunterStatus {
+  eHS_Invalid = 0;
+  eHS_Alive = 1;
+  eHS_Dead = 2;
+  eHS_Downed = 3;
+  eHS_Burning = 4;
+  eHS_LeftTheMission = 5;
+}

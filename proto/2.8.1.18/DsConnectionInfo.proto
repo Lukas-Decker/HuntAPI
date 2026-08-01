@@ -1,0 +1,14 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "SessionPlayerGameKeys.proto";
+import "SessionPlayerLoc.proto";
+import "SessionPlayerInfoBase.proto";
+
+message DsConnectionInfo {
+  string ip = 1;
+  int32 port = 2;
+  FP.Hunt.SessionPlayerGameKeys game_keys = 3;
+  FP.Hunt.SessionPlayerLoc my_loc = 4;
+  repeated FP.Hunt.SessionPlayerInfoBase players = 5;
+}

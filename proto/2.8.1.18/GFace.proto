@@ -1,0 +1,35 @@
+syntax = "proto3";
+package FP.GFace;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+
+enum EGFaceErrors {
+  eGFace_Invalid = 0;
+  eGFace_LoginFailed = 3500;
+  eGFace_LinkFailed = 3501;
+  eGFace_LoginFailedEulaNotAccepted = 3502;
+  eGFace_LoginFailedAccountNotActivated = 3503;
+  eGFace_LoginFailedAccountLocked = 3504;
+  eGFace_LinkFailedAccountAlreadyLinked = 3505;
+}
+message LoginUserToGFaceReq {
+  string email = 1;
+  string password = 2;
+}
+message GFaceId {
+  int64 id = 1;
+  bool account_linked = 2;
+}
+message LinkGFaceToExternalReq {
+  string external_token = 2;
+}
+message LinkGFaceToExternalResponse {
+  bool success = 1;
+  bool gold_rewarded = 2;
+}
+service GFace {
+  rpc LoginUserToGFace(FP.GFace.LoginUserToGFaceReq) returns (FP.GFace.GFaceId);
+  rpc GetGFaceId(google.protobuf.Empty) returns (FP.GFace.GFaceId);
+  rpc LinkGFaceToExternal(FP.GFace.LinkGFaceToExternalReq) returns (FP.GFace.LinkGFaceToExternalResponse);
+}

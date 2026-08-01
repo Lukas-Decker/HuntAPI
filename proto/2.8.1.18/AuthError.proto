@@ -1,0 +1,28 @@
+syntax = "proto3";
+package FP;
+
+import "TimeStamp.proto";
+
+enum EAuthErrorCode {
+  option allow_alias = true;
+  EAuthErrorCode_CommonBegin = 0;
+  EAuthErrorCode_InternalError = 1;
+  EAuthErrorCode_SteamInvalidToken = 10;
+  EAuthErrorCode_SteamInvalidOwnership = 11;
+  EAuthErrorCode_SteamInvalidAppIdOrAppKey = 12;
+  EAuthErrorCode_SteamServerNotReachable = 13;
+  EAuthErrorCode_SteamServerErrorInResponse = 14;
+  EAuthErrorCode_PublisherBanned = 15;
+  EAuthErrorCode_DriverExploit = 16;
+  EAuthErrorCode_VersionNotAllowed = 20;
+  EAuthErrorCode_CommonEnd = 999;
+  EAuthErrorCode_GameCommonBegin = 1000;
+  EAuthErrorCode_GameBanReasonsBegin = 1000;
+  EAuthErrorCode_GameCommonEnd = 1999;
+  EAuthErrorCode_GameBegin = 2000;
+  EAuthErrorCode_GameEnd = 2999;
+}
+message AuthError {
+  uint32 Code = 1;
+  FP.TimeStamp EndTimeStamp = 2;
+}

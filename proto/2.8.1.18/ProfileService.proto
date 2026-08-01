@@ -1,0 +1,18 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+import "Profile.proto";
+import "Platform.proto";
+
+service ProfileService {
+  rpc CreateProfile(google.protobuf.Empty) returns (FP.Hunt.GetProfileRsp);
+  rpc GetProfile(google.protobuf.Empty) returns (FP.Hunt.GetProfileRsp);
+  rpc QueryProfile(FP.Hunt.QueryProfileReq) returns (FP.Hunt.GetProfileRsp);
+  rpc GetProfileForMissionFromDS(FP.Hunt.QueryProfileReq) returns (FP.Hunt.GetProfileRsp);
+  rpc GetRegions(google.protobuf.Empty) returns (FP.Hunt.RegionList);
+  rpc GetCurrentMaintenanceInfo(google.protobuf.Empty) returns (FP.Hunt.MaintenanceInfo);
+  rpc SetIsInLocalMission(FP.Hunt.IsInLocalMissionReq) returns (google.protobuf.Empty);
+  rpc SetAllowCrossplay(FP.Hunt.AllowCrossplayReq) returns (google.protobuf.Empty);
+}

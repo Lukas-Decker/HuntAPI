@@ -1,0 +1,20 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "ServiceExt.proto";
+import "Common.proto";
+
+message MaintenanceRegionInfo {
+  string region = 1;
+  google.protobuf.Timestamp start_time = 2;
+  int32 start_in_minutes = 3;
+}
+message MaintenanceInfo {
+  repeated FP.Hunt.MaintenanceRegionInfo regions = 1;
+}
+service PlatformService {
+  rpc MaintenanceStream(google.protobuf.Empty) returns (FP.Hunt.MaintenanceInfo);
+  rpc ReleasePackStream(google.protobuf.Empty) returns (FP.ReleasePack);
+}

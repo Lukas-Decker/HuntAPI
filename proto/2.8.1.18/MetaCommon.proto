@@ -1,0 +1,445 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "PurchasePlatform.proto";
+import "UserInfo.proto";
+
+enum DummyConstants {
+  dummy_val = 0;
+  DC_MaxAmountCharsInInactiveList = 2;
+  InventorySizePointsBase = 5;
+}
+enum MetaObjectType {
+  OTNone = 0;
+  Avatar = 1;
+  Badge = 2;
+  StatTracker = 3;
+  Animation = 4;
+  Frame = 5;
+  Title = 6;
+}
+enum BattlePassBundlePremiumLevel {
+  BPNone = 0;
+  Premium = 1;
+  Max = 2;
+}
+enum FactionPact {
+  NoPact = 0;
+  TrickshooterPact = 1;
+  KnifethrowerPact = 2;
+  RingmasterPact = 3;
+  MysticPact = 4;
+  StrongmanPact = 5;
+  NumValuesPacts = 6;
+}
+enum CustomAttributeLogic {
+  CAL_None = 0;
+  CAL_Marks = 1;
+  CAL_FactionPact = 2;
+  CAL_DeathCheat = 3;
+}
+enum RewardType {
+  RT_Nothing = 0;
+  RT_Gold = 1;
+  RT_Exp = 2;
+  RT_Bounty = 3;
+  RT_Gems = 4;
+  RT_LiveEventPoints = 5;
+  RT_HunterExp = 6;
+  RT_HunterPoints = 7;
+  RT_HunterPointsGlobal = 8;
+  RT_BloodLineExp = 9;
+  RT_HunterSlot = 10;
+  RT_ItemUnlock = 11;
+  RT_ItemAdd = 12;
+  RT_LegendaryCharUnlock = 13;
+  RT_LegendaryCharUnlockStage = 14;
+  RT_LoadoutSlot = 15;
+  RT_LegendaryCharInstance = 16;
+  RT_TraitUnlock = 17;
+  RT_ItemDiscount = 18;
+  RT_HunterDiscount = 19;
+  RT_PredefinedCharInstance = 20;
+  RT_QuestLineActivated = 21;
+  RT_LiveEventChapter = 22;
+  RT_BattlePass = 23;
+  RT_LiveEventLevels = 24;
+  RT_ProfileAvatarUnlock = 25;
+  RT_ProfileBadgeUnlock = 26;
+  RT_ProfileStatTrackerUnlock = 27;
+  RT_AnimationUnlock = 28;
+  RT_ProfileFrameUnlock = 29;
+  RT_ProfileTitleUnlock = 30;
+  RT_LegacyPassToken = 31;
+  RT_StoryChallengeUnlock = 32;
+}
+enum MetaItemType {
+  CraftingMaterial = 0;
+  Tool = 1;
+  Consumable = 2;
+  WeaponRange1h = 3;
+  WeaponMelee1h = 4;
+  WeaponRange2h = 5;
+  WeaponMelee2h = 6;
+  CustomAmmoItemType = 7;
+  Charm = 8;
+}
+enum MetaWeaponType {
+  Undetermined = 0;
+  Rifle = 1;
+  Shotgun = 2;
+  Sword = 3;
+  Pistol = 4;
+  Bow = 5;
+  SlingShot = 6;
+}
+enum MetaStoryChallengeType {
+  UnknownStoryChallenge = 0;
+  NormalStoryChallenge = 1;
+  LegacyPass = 2;
+}
+enum MetaGender {
+  Female = 0;
+  Male = 1;
+  Unknown = 10;
+}
+enum AccoladeTrigger {
+  RewardEvents = 0;
+  HunterMaxed = 1;
+  BloodLineMaxed = 2;
+}
+enum MetaPredefinedCharType {
+  Demo = 0;
+  Legendary = 1;
+  Tutorial = 2;
+  Generic = 3;
+}
+enum PrestigeStartBonusType {
+  PRT_Unknown = 0;
+  PRT_Gold = 1;
+  PRT_Exp = 2;
+  PRT_LegendaryRandom = 3;
+  PRT_LegendaryFixed = 4;
+}
+enum MissionEndAction {
+  Normal = 0;
+  KillHunter = 1;
+  RollBackProgress = 2;
+  PartialRewards = 3;
+}
+enum MissionEndReason {
+  UnknownReason = 0;
+  EAC_Kicked = 1;
+  ClientDisconnected = 2;
+  MissionCompleted = 3;
+  UserQuitGame = 4;
+  MissionExpired = 5;
+  ServerSystemError = 6;
+  Killed = 7;
+  KilledByMonster = 8;
+  KilledByPlayer = 9;
+  KilledBySuicide = 10;
+  MissionNeverEnded = 11;
+}
+enum VirtualUnlockBehavior {
+  VUB_none = 0;
+  VUB_releasePacks = 1;
+  VUB_all = 2;
+}
+enum MetaRarity {
+  Common = 0;
+  Uncommon = 1;
+  Rare = 2;
+  Epic = 3;
+  LegendaryRarity = 4;
+  Mythic = 5;
+}
+enum MetaTraitEffect {
+  Trait_None = 0;
+  Trait_Add1WeaponSizePoint = 1;
+  Trait_Add2WeaponSizePoint = 2;
+  Trait_LiveEventBoost = 3;
+  Trait_ConvertContrabandToNormal = 4;
+  Trait_DeathCheat = 5;
+}
+message MetaObjectId {
+  int32 simple_id = 1;
+  FP.Hunt.MetaObjectType type = 2;
+}
+message MetaSerObject {
+  int32 simple_id = 1;
+  bool unlocked = 2;
+  repeated bool parts_enabled = 3;
+}
+message MetaBoss {
+  enum Enum {
+    Butcher = 0;
+    Spider = 1;
+    Assassin = 2;
+    Scrapbeak = 3;
+    Carina = 4;
+    NumValues = 5;
+    Unknown = -1;
+  }
+}
+message WildTarget {
+  enum Enum {
+    Rotjaw = 0;
+    Hellborn = 1;
+    NumValues = 2;
+    Unknown = -1;
+  }
+}
+message PackedBitArray {
+  int64 blocks_mask = 1;
+  repeated int64 data = 2;
+}
+message GenericReward {
+  enum Source {
+    Unknown = 0;
+    DailyGoal = 2;
+    WeeklyGoal = 3;
+    Twitch = 4;
+    DiceRoll = 5;
+    RedeemCode = 6;
+    QuestLine = 7;
+    TimedQuests = 8;
+    StoryChallenge = 9;
+    Generic = 10;
+    MissionKeepOnDeath = 11;
+  }
+  FP.Hunt.GenericReward.Source source = 1;
+  FP.Hunt.RewardType type = 2;
+  int32 object_id = 3;
+  int32 amount = 4;
+  int32 data1 = 5;
+}
+message MetaSerCustomAttribute {
+  int32 id = 1;
+  int32 value = 2;
+}
+message MetaSerPlayerCharDesc {
+  string name = 1;
+  string name_ui = 9;
+  int32 tier = 2;
+  FP.Hunt.MetaGender gender = 3;
+  int32 level = 4;
+  int64 model_id = 5;
+  repeated FP.Hunt.MetaItemInstanceId items = 6;
+  repeated int64 traits = 7;
+  repeated int32 health_chunks = 8;
+  repeated FP.Hunt.MetaSerCustomAttribute custom_attributes = 10;
+}
+message MetaSerPvEChallengeProgress {
+  int32 challengeId = 1;
+  repeated int64 bitarray_reward_tiers_attributed = 2;
+}
+message MetaWeaponStats {
+  int32 id = 1;
+  int32 pk = 2;
+}
+message MetaHunterSkinStats {
+  int32 id = 1;
+  int32 pk = 2;
+}
+message MetaBloodLineStats {
+  int32 player_kills = 1;
+  int32 killed_by_player = 2;
+  int32 clues_collected = 3;
+  int32 targets_banished = 4;
+  int32 enemy_teams_wiped = 5;
+  int32 monster_kills = 6;
+  int32 maxed_hunters = 7;
+  int32 one_bounty_token = 8;
+  int32 two_bounty_tokens = 9;
+  int32 all_bounty_from_two_bosses = 10;
+  int32 max_bounty_collected_by_a_hunter = 11;
+  int32 max_hunters_killed_by_a_hunter = 12;
+  int32 max_missions_survived_by_a_hunter = 13;
+  int32 total_bounty = 14;
+  int32 boss_kills = 15;
+  int32 max_banishments_by_a_hunter = 16;
+  int32 team_mates_killed = 17;
+  FP.Hunt.MetaBloodLineSkillRating skill_rating = 18;
+  float kd_ratio = 19;
+  FP.Hunt.MetaQuickPlayStats quick_play = 20;
+  int32 player_kill_assists = 21;
+  int32 three_bounty_tokens = 22;
+  float kda_ratio = 23;
+  FP.Hunt.MetaBountyHuntStats bounty_hunt = 24;
+  int64 last_kill_death_unix_time = 25;
+  int32 wild_target_kills = 26;
+  int32 wild_targets_banished = 27;
+  int32 wild_targets_bounty_tokens_extracted = 28;
+  int32 wild_targets_total_bounty = 29;
+  repeated FP.Hunt.MetaHunterSkinStats hunter_skin_stats = 30;
+  repeated FP.Hunt.MetaWeaponStats weapon_stats = 31;
+  float max_kill_distance = 32;
+}
+message MetaCharStats {
+  int32 bounty_collected = 1;
+  int32 hunters_killed = 2;
+  int32 missions_survived = 3;
+  int32 targets_banished = 4;
+}
+message MetaLastMatchInfo {
+  int32 time_played = 1;
+  int32 bounty_collected = 2;
+  int32 enemy_players_killed_by_me = 3;
+  string char_name = 4;
+  int32 char_level = 5;
+  int32 char_exp = 6;
+  int32 char_hunter_points = 7;
+  bool char_died = 8;
+  int32 maximum_bounty = 9;
+  int32 monsters_killed_by_me = 10;
+  int32 monsters_killed_by_team = 11;
+  int32 player_kill_assists = 12;
+  int64 player_that_killed_me_profile_id = 13;
+  int32 enemy_players_killed_by_team = 14;
+}
+message MetaBeforeLastMatchInfo {
+  int32 char_exp = 1;
+  int32 char_level = 2;
+  int32 char_hunter_points = 3;
+  int32 exp = 4;
+  int32 rank = 5;
+  int32 gold = 6;
+}
+message MetaBloodLineSkillRating {
+  int32 skill_based_total_games = 1;
+  float skill_based_bounty_rate = 2;
+  int32 skill_based_pvp_rating = 3;
+  repeated FP.Hunt.MetaRecentBehavior skill_based_recent_behavior = 4;
+  float skill_rating = 5;
+  float skill_variance = 6;
+  float clash_skill_rating = 7;
+  float clash_skill_variance = 8;
+}
+message MetaRecentBehavior {
+  float bounty_hunt_rating = 1;
+  bool is_hunter_alive = 2;
+}
+message MetaStatStreak {
+  int32 total = 1;
+  int32 curr_streak = 2;
+  int32 max_streak = 3;
+}
+message MetaBountyHuntStats {
+  FP.Hunt.MetaStatStreak player_kills_with_assists = 1;
+}
+message MetaQuickPlayStats {
+  FP.Hunt.MetaStatStreak player_kills = 1;
+  int32 player_kills_with_assists = 13;
+  FP.Hunt.MetaStatStreak hunters_saved = 2;
+  FP.Hunt.MetaStatStreak bounty = 3;
+  int32 killed_by_player = 4;
+  int32 wells_spring_activated = 5;
+  int32 rifts_found = 6;
+  int32 monster_kills = 7;
+  int32 last_man_standing = 8;
+  int32 highest_bounty = 9;
+  float kd_ratio = 10;
+  int32 player_kill_assists = 11;
+  float kda_ratio = 12;
+}
+message RealMoneyPrice {
+  PurchasePlatforms.ECurrencyCode code = 1;
+  int32 price_cents = 2;
+}
+message MetaWorldPos {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+message MetaUserReport {
+  string source = 17;
+  int32 eac_reason = 16;
+  string reason = 1;
+  string description = 2;
+  int64 reported_profile_id = 3;
+  bool includes_kill_data = 4;
+  int32 distance = 5;
+  string weapon = 6;
+  bool headshot = 7;
+  bool thruwall = 8;
+  FP.Hunt.MetaWorldPos world_pos = 9;
+  FP.Hunt.MetaWorldPos reported_world_pos = 10;
+  string game_mode = 11;
+  string platform = 12;
+  int64 reported_user_id = 13;
+  string reported_nick_name = 14;
+  int32 mission_time_ms = 15;
+}
+message MetaItemInstanceId {
+  int32 item_simple_id = 1;
+  int32 gold_sell_value = 2;
+  int32 mud = 3;
+}
+message MetaTeamFillingBanReport {
+  int64 partner_profile_id = 1;
+  string region = 2;
+  string mission_template_name = 3;
+}
+message MetaLoginLogs {
+  repeated string errors = 1;
+  repeated string logs = 2;
+}
+message MetaLootBox {
+  int32 id = 1;
+  int32 type = 2;
+  repeated int64 items = 3;
+}
+message MetaBloodLineId {
+  int64 profile_id = 1;
+}
+message GetPublicInfoReq {
+  FP.Hunt.MetaBloodLineId bloodline_id = 1;
+  FP.UserInfo user = 2;
+  bool is_client = 3;
+  bool is_dediserver = 4;
+  string caller_func_name = 5;
+  int64 local_profile_id = 6;
+  bool in_mission = 7;
+}
+message MetaDataBaseCRC {
+  int32 crc = 1;
+}
+message MetaGetTimeLeftForFreeRecruitsGenerationRsp {
+  int32 seconds = 1;
+}
+message MetaDataOverrides {
+  message StoryChallenge {
+    int32 id = 1;
+    int64 start_time = 2;
+    int64 end_time = 3;
+  }
+  message TimedQuestPeriod {
+    int32 id = 1;
+    int64 start_time = 2;
+    int64 end_time = 3;
+  }
+  repeated FP.Hunt.MetaDataOverrides.StoryChallenge story_challenges = 1;
+  repeated FP.Hunt.MetaDataOverrides.TimedQuestPeriod timed_quest_periods = 2;
+  int32 max_amount_in_inventory_tools_slot_by_flags = 3;
+}
+message MetaConfig {
+  int32 release_pack = 1;
+  int32 blood_line_rank_cap = 2;
+  bool client_rewards_authority = 4;
+  FP.Hunt.VirtualUnlockBehavior virtual_unlock_behavior = 5;
+  int32 release_pack_to_virtual_unlock = 6;
+  repeated int32 items_excluded_from_virtual_unlock = 7;
+  repeated int32 legendary_chars_excluded_from_virtual_unlock = 8;
+  bool unhide_all = 9;
+  repeated int32 dlc_hidden_by_default = 10;
+  FP.Hunt.MetaDataOverrides data_overrides = 11;
+  bool all_meta_objects_excluded_from_virtual_unlock = 12;
+  repeated FP.Hunt.MetaObjectId meta_objects_excluded_from_virtual_unlock = 13;
+}
+message MetaUnhiddenInfo {
+  repeated int32 unhidden_items = 1;
+  repeated int32 unhidden_traits = 2;
+  repeated int32 unhidden_legendary_chars = 3;
+  repeated FP.Hunt.MetaObjectId unhidden_meta_objects = 4;
+}

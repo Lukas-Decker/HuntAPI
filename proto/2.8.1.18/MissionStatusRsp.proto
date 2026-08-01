@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "MissionInfo.proto";
+
+message MissionStatusRsp {
+  bool can_reconnect = 1;
+  FP.Hunt.MissionInfo missionInfo = 2;
+}

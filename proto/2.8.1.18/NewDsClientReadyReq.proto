@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "SessionPlayerGameKeys.proto";
+
+message NewDsClientReadyReq {
+  int64 profile_id = 1;
+  FP.Hunt.SessionPlayerGameKeys game_keys = 2;
+}

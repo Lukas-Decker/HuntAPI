@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+message SessionPlayerGameKeys {
+  bytes encryption_key = 1;
+  bytes encryption_init_vector = 2;
+  bytes hash_key = 3;
+  uint32 sequence_start = 4;
+}

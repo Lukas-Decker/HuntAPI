@@ -1,0 +1,77 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "MetaCommon.proto";
+
+message ReleaseManagerEntry {
+  enum Type {
+    Item = 0;
+    Hunter = 1;
+    Dlc = 2;
+    Boost = 3;
+    MetaObject = 5;
+  }
+  enum State {
+    Nothing = 0;
+    Unhide = 1;
+    Hide = 2;
+    Enable = 3;
+    Disable = 4;
+    EligibleToUnlockOnStore = 5;
+    IneligibleToUnlockOnStore = 6;
+  }
+  int32 id = 1;
+  FP.Hunt.ReleaseManagerEntry.Type type = 2;
+  int32 object_id = 3;
+  int64 date = 4;
+  FP.Hunt.ReleaseManagerEntry.State set_state = 5;
+  int32 value = 6;
+  FP.Hunt.MetaObjectType meta_object_type = 7;
+  FP.Hunt.BoostInfo boost_info = 8;
+}
+message BoostInfo {
+  int64 date_end = 1;
+  int32 gold = 2;
+  int32 exp = 3;
+  int32 live_event_points = 4;
+  repeated int32 hunters = 5;
+}
+message ReleaseManagerGrainData {
+  int32 last_id = 1;
+  repeated FP.Hunt.ReleaseManagerEntry entries = 2;
+  repeated string update_grain_keys = 3;
+}
+message ReleaseManagerRsp {
+  enum Code {
+    _unused_code = 0;
+    Ok = 1;
+    _validation_errors = 2;
+    UnknownDlc = 3;
+    UnknownItem = 4;
+    UnknownHunter = 5;
+    DateConflict = 6;
+    DateInvalidValue = 7;
+    CouldNotFindEntry = 8;
+    ObjectIdInvalid = 9;
+    ValueInvalid = 10;
+    BoostInfoNull = 11;
+    UnknownMetaObject = 12;
+    _internal_errors = 20;
+    CouldNotUpdateCache = 21;
+    UnknownCommand = 22;
+  }
+  FP.Hunt.ReleaseManagerRsp.Code code = 1;
+  int32 id_added_record = 2;
+  repeated FP.Hunt.ReleaseManagerEntry all_entries = 3;
+}
+message ReleaseManagerCommand {
+  enum Cmd {
+    UnusedCode = 0;
+    GetAll = 1;
+    Add = 2;
+    Modify = 3;
+    Delete = 4;
+  }
+  FP.Hunt.ReleaseManagerCommand.Cmd cmd_code = 1;
+  FP.Hunt.ReleaseManagerEntry entry = 2;
+}

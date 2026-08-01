@@ -1,0 +1,96 @@
+syntax = "proto3";
+package FP;
+
+import "ServiceExt.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+
+enum EDediStatus {
+  option allow_alias = true;
+  Invalid = 0;
+  Enlisted = 1;
+  Acquired = 2;
+  PortOpened = 3;
+  LevelLoaded = 4;
+  Ready = 4;
+  Ending = 6;
+  LevelEnded = 7;
+  Terminating = 8;
+}
+enum EDediProfilingEvent {
+  EDediProfilingEvent_NotRunning = 0;
+  EDediProfilingEvent_Launching = 1;
+  EDediProfilingEvent_LoadingLevel = 2;
+  EDediProfilingEvent_LevelLoaded = 3;
+  EDediProfilingEvent_Terminating = 4;
+}
+message LoadLevelArgs {
+  string map = 1;
+  string game_rules = 2;
+  fixed32 map_hash = 3;
+  fixed32 game_rules_hash = 4;
+  google.protobuf.Any custom = 5;
+}
+message OnAcquiredArgs {
+  int64 game_session_id = 1;
+}
+message MetaDediMsg {
+  enum Code {
+    ClearMissionBag = 0;
+  }
+  FP.MetaDediMsg.Code code = 1;
+  int64 profile_id = 2;
+}
+message DediCommand {
+  enum ESystemDsCommands {
+    Invalid = 0;
+    Reset = 1;
+    OnAcquired = 2;
+    Shutdown = 3;
+    LoadLevel = 4;
+    StartMaintenance = 5;
+    SystemDsCommands_End = 100;
+    MetaMsg = 101;
+  }
+  uint32 command = 1;
+  google.protobuf.Any args = 6;
+}
+message DediInfo {
+  string name = 1;
+  string ip = 2;
+  int32 port = 3;
+  string node_id = 4;
+  int32 process_id = 5;
+  string version = 6;
+}
+message DediAddress {
+  string address = 1;
+  string port = 2;
+}
+message OnStateChangedArgs {
+  FP.EDediStatus status = 1;
+}
+message DediBootstrapReq {
+  FP.DediInfo info = 1;
+  string region_hint = 2;
+}
+message DediBootstrapRsp {
+  int64 token = 1;
+  repeated string allowed_clients_versions = 2;
+  bool Cancelled = 3;
+}
+message DediProfilingEvent {
+  int64 dedi_id = 1;
+  FP.EDediProfilingEvent event = 2;
+  int32 process_id = 3;
+  string level_name = 4;
+}
+service DediServer {
+  rpc CommandStream(google.protobuf.Empty) returns (FP.DediCommand);
+  rpc OnStateChanged(FP.OnStateChangedArgs) returns (google.protobuf.Empty);
+  rpc ProfilingStream(google.protobuf.Empty) returns (FP.DediProfilingEvent);
+  rpc _TouchDediCommand(FP.DediCommand) returns (google.protobuf.Empty);
+}
+service DediSrvBootstrapper {
+  rpc Bootstrap(FP.DediBootstrapReq) returns (FP.DediBootstrapRsp);
+}

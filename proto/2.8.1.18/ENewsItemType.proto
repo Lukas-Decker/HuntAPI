@@ -1,0 +1,7 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum ENewsItemType {
+  ENewsItemType_Article = 0;
+  ENewsItemType_Promotion = 1;
+}

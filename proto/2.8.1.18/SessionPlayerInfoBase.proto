@@ -1,0 +1,27 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "SessionPlayerLoc.proto";
+import "UserInfo.proto";
+
+enum ESessionPlayerOptions {
+  eSPO_Invalid = 0;
+  eSPO_Team = 1;
+  eSPO_GroupingHint = 2;
+  eSPO_ReadyToInvite = 3;
+  eSPO_ReadyToJoin = 4;
+  eSPO_CrossplayPermission = 5;
+  eSPO_IsSetReady = 6;
+  eSPO_IsBusy = 7;
+}
+message SessionPlayerCustomData {
+  map<int32, string> options = 2;
+}
+message SessionPlayerInfoBase {
+  FP.Hunt.SessionPlayerLoc conn_id = 1;
+  int64 profile_id = 2;
+  string name = 3;
+  FP.Hunt.SessionPlayerCustomData custom_data = 4;
+  bool is_dedicated = 5;
+  FP.UserInfo user = 6;
+}

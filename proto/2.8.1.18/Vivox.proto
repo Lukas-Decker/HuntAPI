@@ -1,0 +1,49 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+
+message GetIssuerReq {
+  enum EActions {
+    Invalid = 0;
+    Issuer = 1;
+  }
+  FP.Hunt.GetIssuerReq.EActions action = 1;
+}
+message GetIssuerResp {
+  string issuer = 1;
+  string domain = 2;
+  string server = 3;
+}
+message GetLoginAccountTokenReq {
+}
+message GetLoginAccountTokenResp {
+  string token = 1;
+  string account = 2;
+}
+message GetJoinChannelTokenReq {
+  enum EChannelType {
+    Echo = 0;
+    Regular = 1;
+    Positional = 2;
+  }
+  FP.Hunt.GetJoinChannelTokenReq.EChannelType channelType = 1;
+  string channelUri = 2;
+}
+message GetJoinChannelTokenResp {
+  string token = 1;
+  string channelUri = 2;
+}
+message VoipRemoteMuteEvent {
+  bool banTeamChannelInput = 1;
+  bool banTeamChannelOutput = 2;
+  bool banProximityChannelInput = 3;
+  bool banProximityChannelOutput = 4;
+}
+service Vivox {
+  rpc GetLoginAccessToken(FP.Hunt.GetLoginAccountTokenReq) returns (FP.Hunt.GetLoginAccountTokenResp);
+  rpc GetJoinAccessToken(FP.Hunt.GetJoinChannelTokenReq) returns (FP.Hunt.GetJoinChannelTokenResp);
+  rpc GetIssuer(FP.Hunt.GetIssuerReq) returns (FP.Hunt.GetIssuerResp);
+  rpc VoipRemoteMute(google.protobuf.Empty) returns (FP.Hunt.VoipRemoteMuteEvent);
+}

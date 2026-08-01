@@ -1,0 +1,8 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum EShopFeaturedState {
+  EShopFeaturedState_No = 0;
+  EShopFeaturedState_Featured = 1;
+  EShopFeaturedState_News = 2;
+}

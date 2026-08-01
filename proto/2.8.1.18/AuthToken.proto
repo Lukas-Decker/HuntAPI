@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "UInt128.proto";
+
+message AuthToken {
+  int64 exp_unix_time = 1;
+  FP.UInt128 key = 2;
+}

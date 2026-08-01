@@ -1,0 +1,37 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "ServiceExt.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+message ProfileInboxTextMessage {
+  string text = 1;
+}
+message ProfileInboxReplayDataMessage {
+  bytes replayData = 1;
+}
+message ProfileInboxMessage {
+  int32 id = 1;
+  string sender_name = 2;
+  google.protobuf.Any content = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+message FilterInboxMessageCondition {
+  int32 count = 1;
+}
+message ProfileInboxMessages {
+  repeated FP.Hunt.ProfileInboxMessage messages = 1;
+}
+message ProfileInboxNotification {
+  int32 UnreadCount = 1;
+}
+message MarkInboxMessageAsReadReq {
+  repeated int32 ids = 1;
+}
+service ProfileInboxService {
+  rpc GetInboxMessages(FP.Hunt.FilterInboxMessageCondition) returns (FP.Hunt.ProfileInboxMessages);
+  rpc NewInboxMessageStream(google.protobuf.Empty) returns (FP.Hunt.ProfileInboxNotification);
+  rpc MarkInboxMessageAsRead(FP.Hunt.MarkInboxMessageAsReadReq) returns (google.protobuf.Empty);
+}

@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum ETelemetryAction {
+  ETelemetryAction_Undefined = 0;
+  ETelemetryAction_Select = 1;
+  ETelemetryAction_View = 2;
+  ETelemetryAction_Purchase = 3;
+}

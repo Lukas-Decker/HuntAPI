@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum ESuspectedMatchmakingFailure {
+  eSMF_Invalid = 0;
+  eSMF_MatchmakingTimerRanOut = 1;
+  eSMF_SearchingForServerTooLong = 2;
+  eSMF_LoadingMapTooLong = 3;
+}

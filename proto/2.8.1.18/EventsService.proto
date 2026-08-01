@@ -1,0 +1,35 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "EventState.proto";
+import "ServiceExt.proto";
+import "SimplestMessages.proto";
+import "Leaderboard.proto";
+import "UserInfo.proto";
+
+message EventLeaderboardItem {
+  FP.Hunt.UserInfoBasic user_info_basic = 1;
+  uint32 event_points = 2;
+  uint32 rank = 3;
+}
+message EventLeaderboardReq {
+  int32 limit = 1;
+  repeated FP.UserInfo user_infos = 2;
+}
+message EventLeaderboard {
+  repeated FP.Hunt.EventLeaderboardItem items = 1;
+  repeated FP.Hunt.EventLeaderboardItem friends = 2;
+}
+message EventLeaderboardRewardingBracketsPoints {
+  repeated uint32 points = 1;
+}
+service EventsService {
+  rpc EventsStateStream(google.protobuf.Empty) returns (FP.Hunt.EventState);
+  rpc GetLastEventMissStatus(google.protobuf.Empty) returns (FP.BoolMsg);
+  rpc GetCurrentEventState(google.protobuf.Empty) returns (FP.Hunt.EventState);
+}
+service EventLeaderboardService {
+  rpc GetLeaderboard(FP.Hunt.EventLeaderboardReq) returns (FP.Hunt.EventLeaderboard);
+  rpc GetRewardingBracketsPoints(google.protobuf.Empty) returns (FP.Hunt.EventLeaderboardRewardingBracketsPoints);
+}

@@ -1,0 +1,62 @@
+syntax = "proto3";
+package FP;
+
+import "AuthError.proto";
+import "ClientConfig.proto";
+import "EUserType.proto";
+import "ProtocolVersion.proto";
+import "ServiceExt.proto";
+import "UserInfo.proto";
+import "Microsoft.proto";
+
+enum ESessionType {
+  Client = 0;
+  DedicatedServer = 1;
+  GmTool = 2;
+}
+message AuthLoginReq {
+  message IdPwd {
+    string id = 1;
+    string key = 2;
+  }
+  message IdToken {
+    int64 id = 1;
+    string token = 2;
+  }
+  message IdStrToken {
+    string id = 1;
+    string token = 2;
+  }
+  int32 protocol_version = 4;
+  FP.AuthLoginReq.IdPwd id_pwd = 5;
+  string token = 6;
+  FP.AuthLoginReq.IdToken id_token = 9;
+  FP.AuthLoginReq.IdStrToken id_str_token = 11;
+  string game = 3;
+  FP.Version game_version = 7;
+  FP.ESessionType session_type = 8;
+  FP.EUserType user_type = 10;
+  string platform_variant = 12;
+  int32 acc5fdca86598038 = 13;
+  int32 logic_version = 14;
+  string meta_signature = 15;
+}
+message AuthLogoutReq {
+  string token = 1;
+}
+message AuthResult {
+  bool authorized = 1;
+  FP.UserInfo user = 2;
+  string token = 3;
+  int64 session_id = 4;
+  FP.AuthError error = 5;
+  int64 profile_id = 6;
+  FP.ClientConfig client_config = 7;
+  FP.XboxTokens xbox_tokens = 8;
+  string nakama_id = 9;
+  string meta_signature = 10;
+}
+service Auth {
+  rpc Login(FP.AuthLoginReq) returns (FP.AuthResult);
+  rpc Logout(FP.AuthLogoutReq) returns (FP.AuthResult);
+}

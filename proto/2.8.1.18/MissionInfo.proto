@@ -1,0 +1,12 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "EHunterStatus.proto";
+import "PlayerMissionState.proto";
+
+message MissionInfo {
+  FP.Hunt.EHunterStatus hunter_status = 1;
+  repeated FP.Hunt.PlayerMissionState teammates_mission_states = 2;
+  uint32 remaining_time_in_sec = 3;
+  string mission_guid = 4;
+}

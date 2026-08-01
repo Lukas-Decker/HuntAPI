@@ -1,0 +1,37 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum ELinkTargetType {
+  ELinkTarget_Undefined = 0;
+  ELinkTarget_LiveEvent = 1;
+  ELinkTarget_BattlePassReward = 2;
+  ELinkTarget_Store = 3;
+  ELinkTarget_StoreItem = 4;
+  ELinkTarget_StoreHunter = 5;
+  ELinkTarget_StoreDLC = 6;
+  ELinkTarget_StoreCharm = 7;
+  ELinkTarget_StoreAnimation = 8;
+  ELinkTarget_StoreBloodBonds = 9;
+  ELinkTarget_StoreBattlePass = 10;
+  ELinkTarget_StoreBundle = 11;
+  ELinkTarget_StoryChallenge = 12;
+  ELinkTarget_StoryChallengeIntro = 13;
+  ELinkTarget_StoryChallengeRewards = 14;
+  ELinkTarget_WeeklyChallenge = 15;
+  ELinkTarget_PlayerProfile = 16;
+  ELinkTarget_PlayerProfileAvatar = 17;
+  ELinkTarget_PlayerProfileFrame = 18;
+  ELinkTarget_PlayerProfileTitle = 19;
+  ELinkTarget_PlayerProfileBadge = 20;
+  ELinkTarget_PlayerProfileStatistic = 22;
+  ELinkTarget_GameMode = 23;
+  ELinkTarget_GameModeBountyHunt = 24;
+  ELinkTarget_GameModeBanishMode = 25;
+  ELinkTarget_GameModeQuickplay = 26;
+  ELinkTarget_GameModeShootingRange = 27;
+  ELinkTarget_GameModeTraining = 28;
+}
+message LinkTarget {
+  FP.Hunt.ELinkTargetType type = 1;
+  uint32 id = 2;
+}

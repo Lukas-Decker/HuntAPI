@@ -1,0 +1,11 @@
+syntax = "proto3";
+package FP.Hunt;
+
+message GameSessionId {
+  int64 val = 1;
+}
+message SessionPlayerLoc {
+  FP.Hunt.GameSessionId sid = 1;
+  int32 player_idx = 2;
+  int64 profile_id = 4;
+}

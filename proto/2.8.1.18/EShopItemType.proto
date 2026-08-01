@@ -1,0 +1,15 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum EShopItemType {
+  EShopItemType_Undefined = 0;
+  EShopItemType_Equipment = 1;
+  EShopItemType_DLC = 2;
+  EShopItemType_Hunter = 3;
+  EShopItemType_EventBoost = 4;
+  EShopItemType_EventBundle = 5;
+  EShopItemType_StoreBundle = 6;
+  EShopItemType_Charms = 7;
+  EShopItemType_Animations = 8;
+  EShopItemType_StoryChallenge = 9;
+}

@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "EUserType.proto";
+
+message NewsFeedReq {
+  string language = 1;
+  FP.EUserType platform = 2;
+}

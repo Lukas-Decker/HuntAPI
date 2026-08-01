@@ -1,0 +1,11 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "Image.proto";
+import "NewsItemMainBlock.proto";
+
+message NewsItemMain {
+  repeated FP.Hunt.NewsItemMainBlock blocks = 2;
+  repeated FP.Hunt.Image images = 3;
+  string tags = 6;
+}

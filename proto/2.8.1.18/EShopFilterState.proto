@@ -1,0 +1,7 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum EShopFilterState {
+  EShopFilterState_No = 0;
+  EShopFilterState_Discount = 1;
+}

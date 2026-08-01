@@ -1,0 +1,13 @@
+syntax = "proto3";
+package FP;
+
+enum EProtocolVersion {
+  eProtocolVersion_Invalid = 0;
+  eProtocolVersion_Current = 3;
+}
+message Version {
+  int32 major_ = 1;
+  int32 minor_ = 2;
+  int32 build = 3;
+  int32 revision = 4;
+}

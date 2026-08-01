@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "EHunterStatus.proto";
+
+message PlayerMissionState {
+  string name = 1;
+  FP.Hunt.EHunterStatus hunter_status = 2;
+}

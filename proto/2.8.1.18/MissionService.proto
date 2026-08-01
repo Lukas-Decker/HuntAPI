@@ -1,0 +1,17 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+import "Mission.proto";
+
+service MissionService {
+  rpc GetAllActiveMissions(google.protobuf.Empty) returns (FP.Hunt.GetMultipleActiveMissionsRsp);
+  rpc GetActiveMissionDetails(FP.Hunt.GetActiveMissionDetailsReq) returns (FP.Hunt.GetActiveMissionDetailsRsp);
+  rpc MissionUpdatesStream(google.protobuf.Empty) returns (FP.Hunt.MissionUpdatesStreamEvent);
+  rpc GetKnownMissionTemplates(google.protobuf.Empty) returns (FP.Hunt.GetMultipleMissionTemplatesRsp);
+  rpc ReloadMissionTemplates(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc AddRandomMissions(FP.Hunt.RandomMissionReq) returns (FP.Hunt.GetMultipleActiveMissionsRsp);
+  rpc RemoveMissions(FP.Hunt.RemoveMissionsReq) returns (google.protobuf.Empty);
+  rpc RemoveAllMissions(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

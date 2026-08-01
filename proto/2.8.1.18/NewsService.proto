@@ -1,0 +1,19 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "ServiceExt.proto";
+import "NewsPreviewsReq.proto";
+import "NewsPreviewsRsp.proto";
+import "NewsFeedReq.proto";
+import "NewsFeedRsp.proto";
+import "NewsMainReq.proto";
+import "NewsFeedItem.proto";
+import "Images.proto";
+import "SimplestMessages.proto";
+
+service NewsService {
+  rpc GetPreviews(FP.Hunt.NewsPreviewsReq) returns (FP.Hunt.NewsPreviewsRsp);
+  rpc GetNewsFeed(FP.Hunt.NewsFeedReq) returns (FP.Hunt.NewsFeedRsp);
+  rpc GetNewsFeedItem(FP.Hunt.NewsMainReq) returns (FP.Hunt.NewsFeedItem);
+  rpc GetNewsImages(FP.Uint32sArrayMsg) returns (FP.Hunt.Images);
+}

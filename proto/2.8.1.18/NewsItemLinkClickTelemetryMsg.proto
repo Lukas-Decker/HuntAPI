@@ -1,0 +1,11 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "AuthToken.proto";
+import "UserInfo.proto";
+
+message NewsItemLinkClickTelemetryMsg {
+  FP.Hunt.AuthToken token = 1;
+  FP.UserInfo user_info = 2;
+  uint32 news_item_id = 3;
+}

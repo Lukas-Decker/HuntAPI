@@ -1,0 +1,68 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "InGamePurchase.proto";
+import "MetaBloodLine.proto";
+import "MetaCommon.proto";
+import "MetaDiscounts.proto";
+import "MetaMissionBag.proto";
+import "MetaRequest.proto";
+import "MetaTelemetry.proto";
+import "ServiceExt.proto";
+import "MetaReleaseManager.proto";
+
+message RecruitsGenerationTestParams {
+  enum Type {
+    Normal = 0;
+    Quickplay = 1;
+    Legendary = 2;
+  }
+  FP.Hunt.RecruitsGenerationTestParams.Type type = 1;
+  int32 num_generations = 2;
+  string class = 3;
+  int32 tier = 4;
+}
+message RecruitsGenerationTestRsp {
+  FP.Hunt.RecruitsGenerationTestParams params = 1;
+  repeated FP.Hunt.MetaSerPlayerChar recruits = 2;
+}
+message MetaConfigForDS {
+  FP.Hunt.MetaConfig basic_config = 1;
+  repeated FP.Hunt.ReleaseManagerEntry release_manager_entries = 2;
+  FP.Hunt.MetaUnhiddenInfo unhidden_info = 3;
+}
+service MetaService {
+  rpc GFaceRequest(FP.Hunt.MetaRequest) returns (FP.Hunt.MetaReqRsp);
+  rpc GMToolRequest(FP.Hunt.MetaRequest) returns (FP.Hunt.MetaReqRsp);
+  rpc ClientRequest(FP.Hunt.MetaRequest) returns (FP.Hunt.MetaReqRsp);
+  rpc GetTimeLeftForFreeRecruitsGeneration(google.protobuf.Empty) returns (FP.Hunt.MetaGetTimeLeftForFreeRecruitsGenerationRsp);
+  rpc GetLoginLogs(google.protobuf.Empty) returns (FP.Hunt.MetaLoginLogs);
+  rpc GetPublicInfo(FP.Hunt.GetPublicInfoReq) returns (FP.Hunt.MetaPublicInfo);
+  rpc DSCmd_GetMetaConfigForDS(google.protobuf.Empty) returns (FP.Hunt.MetaConfigForDS);
+  rpc DSCmd_UpdateMissionBag(FP.Hunt.MetaMissionBagUpdate) returns (google.protobuf.Empty);
+  rpc UpdateMissionBagFromClient(FP.Hunt.MetaMissionBagUpdate) returns (google.protobuf.Empty);
+  rpc UserReport(FP.Hunt.MetaUserReport) returns (google.protobuf.Empty);
+  rpc LogUITelemetry(FP.Hunt.UITelemetryInfo) returns (google.protobuf.Empty);
+  rpc LogClientEvent(FP.Hunt.ClientEventInfo) returns (google.protobuf.Empty);
+  rpc TeamFillingBanReport(FP.Hunt.MetaTeamFillingBanReport) returns (google.protobuf.Empty);
+  rpc DSCmd_GroupUpdateMissionBag(FP.Hunt.MetaMissionBagGroupUpdate) returns (google.protobuf.Empty);
+  rpc DSCmd_UpdateMissionGoalProgress(FP.Hunt.MetaMissionBagUpdate) returns (google.protobuf.Empty);
+  rpc UpdateTutorialMissionBag(FP.Hunt.MetaMissionBagUpdate) returns (google.protobuf.Empty);
+  rpc UpdateChallengeMissionBag(FP.Hunt.MetaMissionBagUpdate) returns (google.protobuf.Empty);
+  rpc DSCmd_OnMissionStart(FP.Hunt.MetaBloodLineId) returns (google.protobuf.Empty);
+  rpc DSCmd_GenerateQuickPlayChars(google.protobuf.Empty) returns (FP.Hunt.MetaQuickPlayCharsRsp);
+  rpc TwitchDevRewardEntitlement(FP.Hunt.TwitchEntitlementConsumed) returns (google.protobuf.Empty);
+  rpc TwitchDevClearHistory(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc DiscountsDevCommand(FP.Hunt.DiscountsCommand) returns (FP.Hunt.DiscountsRsp);
+  rpc ReleaseManagerDevCommand(FP.Hunt.ReleaseManagerCommand) returns (FP.Hunt.ReleaseManagerRsp);
+  rpc RecruitsGenerationTestDevCmd(FP.Hunt.RecruitsGenerationTestParams) returns (FP.Hunt.RecruitsGenerationTestRsp);
+  rpc SteamDevTestBoosterPackPurchase(FP.Hunt.InitTransactionRequest) returns (google.protobuf.Empty);
+  rpc LogHUDSettingsTelemetry(FP.Hunt.HUDTelemetryInfo) returns (google.protobuf.Empty);
+  rpc LogControlSettingsTelemetry(FP.Hunt.ControlSettingsTelemetryInfo) returns (google.protobuf.Empty);
+  rpc LogKeyBindingsTelemetry(FP.Hunt.KeyBindingsTelemetryInfo) returns (google.protobuf.Empty);
+  rpc LogHardwareInfoTelemetry(FP.Hunt.HardwareTelemetryInfo) returns (google.protobuf.Empty);
+  rpc LogAudioSettingsTelemetry(FP.Hunt.AudioSettingsTelemetryInfo) returns (google.protobuf.Empty);
+  rpc SendLocaleInfo(FP.Hunt.LocaleInfo) returns (google.protobuf.Empty);
+  rpc SubForNotifications(google.protobuf.Empty) returns (FP.Hunt.MetaServerNotification);
+}

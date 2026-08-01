@@ -1,0 +1,10 @@
+syntax = "proto3";
+package FP.Hunt;
+
+message Image {
+  uint32 id = 1;
+  bytes data = 2;
+  string name = 3;
+  uint32 crc = 4;
+  string url = 5;
+}

@@ -1,0 +1,6 @@
+syntax = "proto3";
+package FP.Hunt;
+
+message UpdateGameSessionRemainingTimeReq {
+  uint32 remaining_time_sec = 1;
+}

@@ -1,0 +1,427 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "Dedi.proto";
+import "ESuspectedMatchmakingFailure.proto";
+import "MetaBloodLine.proto";
+import "Mission.proto";
+import "ServiceExt.proto";
+import "SessionPlayerGameKeys.proto";
+import "SessionPlayerInfoBase.proto";
+import "SessionPlayerLoc.proto";
+import "UpdateGameSessionRemainingTimeReq.proto";
+import "UserInfo.proto";
+import "EUserType.proto";
+
+enum ESessionStatus {
+  Invalid = 0;
+  Initializing = 1;
+  Created = 2;
+  PreStart = 3;
+  Starting = 4;
+  InCoreGame = 5;
+  CoreGameEnded = 6;
+  Closing = 7;
+  Reopened = 8;
+}
+enum ESessionCreationType {
+  eSCT_Invalid = 0;
+  eSCT_Manual = 1;
+  eSCT_Solo = 2;
+  eSCT_Random = 3;
+  eSCT_Invited = 4;
+}
+enum ELobbyCustomDataKey {
+  eLCDK_Begin = 0;
+  eLCDK_WaitingForRandomTeammate = 1;
+  eLCDK_PretendRandomGroup = 2;
+  eLCDK_LobbyFailed = 3;
+}
+enum ELobbyGetInviteCodeType {
+  Get = 0;
+  GenerateIfNone = 1;
+  Generate = 2;
+}
+enum ERoomEventType {
+  eRET_Invalid = 0;
+  eRET_Created = 1;
+  eRET_PlayerAdded = 2;
+  eRET_PlayerRemoved = 3;
+  eRET_PlayerUpdated = 4;
+  eRET_StatusChanged = 5;
+  eRET_UserPacket = 6;
+  eRET_CommandMimic = 7;
+  eRET_DSReady = 8;
+  eRET_CustomDataChanged = 9;
+  eRET_EvacuationStarted = 12;
+  eRET_SessionMerged = 15;
+  eRET_PlayerMutableStateChanged = 16;
+  eRET_NoAvailableDS = 17;
+  eRET_MatchmakingFinished = 18;
+  eRET_DSFailed = 19;
+  eRET_DSAcquired = 20;
+  eRET_PlayerSpawnPointSelected = 21;
+  eRET_PlayerSpawnPointInitialized = 22;
+  eRET_MatchmakingStarted = 23;
+  eRET_PlayerSpawnPointDone = 24;
+  eRET_BloodLineSetupChanged = 25;
+  eRET_LobbyHostChanged = 26;
+  eRET_NewGameClientConnectionRequested = 27;
+  eRET_PlayerKicked = 28;
+  eRET_SearchForRandomThirdStarted = 29;
+  eRET_SearchForRandomThirdFinished = 30;
+  eRET_SearchForRandomThirdCanceled = 31;
+  eRET_LobbyCustomDataChanged = 32;
+}
+enum EInviteResponseType {
+  SessionInvitationType = 0;
+  SessionInvitationRespType = 1;
+}
+enum ELobbyError {
+  eLErr_Success = 0;
+  eLErr_Begin = 2000;
+  eLErr_InvalidSession = 2001;
+  eLErr_AlreadyInSession = 2002;
+  eLErr_NoSuchPlayerInSession = 2003;
+  eLErr_InReadyState = 2004;
+  eLErr_InviteeHasNoProfile = 2005;
+  eLErr_InviteeIsBanned = 2006;
+  eLErr_NoMissionIsSet = 2007;
+  eLErr_NoRegionIsSet = 2009;
+  eLErr_InvalidOperation = 2008;
+  eLErr_InvalidMissionId = 2010;
+  eLErr_InvalidRegion = 2011;
+  eLErr_InvalidPlayerSetSpawnPoint = 2012;
+  eLErr_InvalidSessionHandle = 2013;
+  eLErr_InvalidBloodlineRank = 2014;
+  eLErr_FailedToMergeNoSpace = 2015;
+  eLErr_FailedToMergeRejectedByPeer = 2016;
+  eLErr_RegionInMaintenance = 2017;
+  eLErr_GenericFailure = 2018;
+  eLErr_IncompatibleVersion = 2019;
+  eLErr_Begin_InviteCodes = 2100;
+  eLErr_InactiveCode = 2101;
+  eLErr_LobbyFull = 2102;
+  eLErr_CrossplayRestricted = 2103;
+  eLErr_IncompatiblePlatform = 2104;
+  eLErr_KickedCooldown = 2105;
+  eLErr_CodeGenerationFailed = 2106;
+  eLErr_AlreadyInLobby = 2107;
+  eLErr_CodeGenerationCooldown = 2108;
+  eLErr_InMatchmaking = 2109;
+}
+message SessionPlayerInfo {
+  FP.Hunt.SessionPlayerInfoBase base_info = 8;
+  FP.Hunt.MetaBloodLineCoreInfo bloodline_cache = 7;
+  bool was_invited = 9;
+  int32 team_index = 10;
+}
+message SessionPlayerMutableState {
+  bool is_ready = 1;
+  int32 current_ping = 2;
+}
+message SessionPlayerState {
+  FP.Hunt.SessionPlayerInfo info = 1;
+  FP.Hunt.SessionPlayerMutableState mutable_state = 2;
+  FP.Hunt.SessionPlayerGameKeys game_keys = 3;
+}
+message LobbyCustomData {
+  map<int32, string> data = 1;
+}
+message GetLobbyCustomDataReq {
+  repeated FP.Hunt.ELobbyCustomDataKey keys = 1;
+  int32 error = 2;
+}
+message LobbyCustomDataRsp {
+  map<int32, string> data = 1;
+  int32 error = 2;
+}
+message GameSessionBrief {
+  int64 id = 1;
+  string name = 2;
+  string mission_name = 3;
+  FP.Hunt.ESessionCreationType creation_type = 8;
+  FP.Hunt.ESessionStatus status = 4;
+}
+message GameSessionBackendState {
+  FP.DediInfo dedi_server = 1;
+  FP.Hunt.RoomMissionData mission_data = 2;
+}
+message GameSessionStatus {
+  FP.Hunt.ESessionStatus status = 1;
+}
+message GameSessionState {
+  FP.Hunt.GameSessionBrief brief = 1;
+  FP.Hunt.GameSessionCustomData custom_data = 3;
+  FP.Hunt.GameSessionBackendState back_state = 4;
+  repeated FP.Hunt.SessionPlayerState players = 2;
+  int64 host_player_id = 5;
+}
+message GameSessionCustomData {
+  fixed32 game_rules_hash = 1;
+  fixed32 level_hash = 2;
+  string mission_guid = 10;
+  int32 version = 4;
+  int32 variant = 5;
+  int32 language = 6;
+  int32 country = 7;
+  repeated string regions = 11;
+  FP.Hunt.MatchmakingOption matchmaking_option = 12;
+}
+message GameSessionReplayData {
+  bytes replayData = 1;
+}
+message CreateSessionReq {
+  string mission_guid = 1;
+  int32 grouping_hint = 2;
+  repeated string regions = 4;
+  repeated FP.UserInfo invited_players = 3;
+  FP.Hunt.ESessionCreationType creation_type = 5;
+  FP.Hunt.MatchmakingOption matchmaking_option = 6;
+  int32 current_ping = 7;
+}
+message AddPlayersToLobbyReq {
+  int64 lobby_id = 1;
+  repeated FP.UserInfo invited_players = 2;
+  repeated int64 invited_player_ids = 3;
+}
+message KickPlayerReq {
+  int64 target_profile_id = 2;
+}
+message JoinThroughInviteCodeReq {
+  int64 invite_code = 1;
+}
+message JoinThroughInviteCodeRsp {
+  int32 error = 1;
+}
+message GetInviteCodeReq {
+  FP.Hunt.ELobbyGetInviteCodeType type = 1;
+}
+message GetInviteCodeRsp {
+  int64 invite_code = 1;
+  int32 error = 2;
+}
+message LeaveSessionReq {
+  FP.Hunt.GameSessionId gamesession_id = 1;
+  FP.Hunt.GameSessionId lobby_id = 2;
+}
+message GameSessionList {
+  repeated FP.Hunt.GameSessionBrief sessions = 1;
+}
+message BloodLineSetupChanged {
+  int64 profile_id = 1;
+  FP.Hunt.MetaPublicInfo blood_line_info = 2;
+}
+message RoomEvent {
+  enum EMatchMakingFinishedCancelReason {
+    PlayerCancel = 0;
+    MissionRemoved = 1;
+    LiveEventFinished = 2;
+  }
+  message CreatedArgs {
+    FP.Hunt.GameSessionState state_snapshot = 1;
+    FP.Hunt.SessionPlayerLoc my_loc = 2;
+    FP.Hunt.LobbyCustomData lobby_custom_data = 3;
+  }
+  message EvacuationArgs {
+    int64 next_lobby_id = 1;
+    FP.Hunt.SessionPlayerLoc next_conn_id = 2;
+  }
+  message StatusChangedArgs {
+    FP.Hunt.ESessionStatus status = 1;
+    FP.Hunt.GameSessionBackendState back_state = 2;
+    FP.Hunt.SessionPlayerGameKeys game_session_keys = 3;
+  }
+  message PlayerMutableStateChangedArgs {
+    int64 profile_id = 2;
+    FP.Hunt.SessionPlayerMutableState state = 3;
+  }
+  message MatchMakingFinishedArgs {
+    bool is_canceled = 1;
+    FP.Hunt.RoomEvent.EMatchMakingFinishedCancelReason reason = 2;
+    string region = 3;
+  }
+  message PlayerSpawnPointChangedArgs {
+    int64 profile_id = 2;
+    uint32 spawn_point_id = 3;
+  }
+  message PlayerSpawnPointInitialArgs {
+    repeated uint32 available_spawn_points = 3;
+    int32 time_limit = 4;
+    int64 profile_id = 5;
+  }
+  message MatchmakingStartedArgs {
+    int32 time_limit = 1;
+  }
+  message DSAcquiredArgs {
+    string level_name = 1;
+  }
+  message NewGameClientConnectionRequestedArgs {
+    int64 profile_id = 1;
+    FP.Hunt.SessionPlayerGameKeys session_keys = 2;
+  }
+  message LobbyState {
+    int32 mm_rating = 1;
+  }
+  FP.Hunt.ERoomEventType event_type = 1;
+  int64 room_id = 10;
+  FP.Hunt.RoomEvent.StatusChangedArgs status_args = 4;
+  FP.Hunt.SessionPlayerInfo player = 3;
+  FP.Hunt.RoomEvent.PlayerMutableStateChangedArgs pmstate_args = 15;
+  FP.Hunt.GameSessionState state_snapshot = 7;
+  FP.Hunt.RoomEvent.EvacuationArgs evacuation_args = 11;
+  FP.Hunt.JoinSessionRsp join_result = 13;
+  FP.Hunt.GameSessionCustomData custom_data = 14;
+  FP.Hunt.RoomEvent.MatchMakingFinishedArgs mmf_args = 16;
+  FP.Hunt.RoomEvent.PlayerSpawnPointChangedArgs spawn_point_args = 17;
+  FP.Hunt.RoomEvent.PlayerSpawnPointInitialArgs sp_init_args = 18;
+  FP.Hunt.BloodLineSetupChanged blood_line_args = 19;
+  FP.Hunt.RoomEvent.MatchmakingStartedArgs mms_args = 20;
+  FP.Hunt.RoomEvent.CreatedArgs created_args = 21;
+  FP.Hunt.RoomEvent.DSAcquiredArgs ds_acquired_args = 22;
+  FP.Hunt.RoomEvent.NewGameClientConnectionRequestedArgs new_game_client_connection_requested_args = 24;
+  FP.Hunt.LobbyCustomData lobby_custom_data = 25;
+  FP.Hunt.RoomEvent.LobbyState lobby_state = 23;
+}
+message GameSessionConnDetail {
+  uint32 ip = 2;
+  uint32 port = 3;
+}
+message JoinSessionReq {
+  FP.Hunt.GameSessionId id = 1;
+  FP.Hunt.SessionPlayerCustomData custom_data = 2;
+}
+message JoinSessionRsp {
+  FP.Hunt.GameSessionConnDetail conn_detail = 1;
+  FP.Hunt.SessionPlayerLoc conn_id = 2;
+}
+message BooleanRsp {
+  bool value = 1;
+}
+message RemovePlayerFromSessionReq {
+  FP.Hunt.GameSessionId sid = 1;
+  int64 player_profile_id = 2;
+}
+message SetPlayerMutableStateSelfReq {
+  FP.Hunt.SessionPlayerMutableState new_state = 1;
+  FP.Hunt.GameSessionId sid = 2;
+}
+message SetPlayerSpawnPositionSelfReq {
+  uint32 spawn_point_id = 1;
+  FP.Hunt.GameSessionId sid = 2;
+}
+message ReportSuspectedMatchmakingFailureReq {
+  FP.Hunt.ESuspectedMatchmakingFailure failure = 1;
+  FP.Hunt.GameSessionId lobby_id = 2;
+  string mission_name = 3;
+  string mission_guid = 4;
+}
+message SetPlayerCustomDataSelfReq {
+  FP.Hunt.SessionPlayerCustomData new_data = 1;
+  FP.Hunt.GameSessionId sid = 2;
+  FP.Hunt.GameSessionId lobby_id = 3;
+}
+message ChangeGameSessionCustomDataReq {
+  FP.Hunt.GameSessionId sid = 1;
+  FP.Hunt.GameSessionCustomData custom_data = 2;
+}
+message PromoteSelfToLobbyHostReq {
+  FP.Hunt.GameSessionId sid = 1;
+}
+message GetRegionListRsp {
+  repeated string regions = 1;
+}
+message GetLobbyRsp {
+  bool exists = 1;
+  int32 error = 2;
+  FP.Hunt.GameSessionState state_snapshot = 3;
+  FP.Hunt.SessionPlayerLoc my_loc = 4;
+  FP.Hunt.LobbyCustomData lobby_custom_data = 5;
+}
+message SessionInviteReq {
+  FP.Hunt.GameSessionId session = 1;
+  int64 inviter_id = 2;
+  int64 invitee_id = 3;
+  string inviter_name = 4;
+  string invitee_name = 5;
+}
+message SessionInvitation {
+  FP.Hunt.GameSessionBrief session_brief = 1;
+  int64 inviter = 2;
+}
+message SessionInvitationResp {
+  bool accepted = 1;
+  FP.Hunt.GameSessionId session = 2;
+  int64 inviter_id = 3;
+  string inviter_name = 4;
+  int64 invitee_id = 5;
+  string invitee_name = 6;
+  FP.Hunt.SessionPlayerCustomData invitee_custom_data = 7;
+}
+message SessionInvitationRespWrap {
+  FP.Hunt.EInviteResponseType type = 1;
+  FP.Hunt.SessionInvitation session_invitation = 2;
+  FP.Hunt.SessionInvitationResp invitation_resp = 3;
+}
+message LobbyErrorCodeRsp {
+  int32 error = 1;
+}
+message AllTeamExtractedBounty {
+  FP.Hunt.GameSessionId sid = 1;
+  repeated FP.Hunt.TeamExtractedBounty teams = 2;
+}
+message TeamExtractedBounty {
+  repeated FP.Hunt.PlayerExtractedBounty players = 2;
+}
+message PlayerExtractedBounty {
+  int64 user_id = 1;
+  FP.EUserType user_type = 2;
+  int32 extracted_bounty = 3;
+}
+message PlayerKillDeathReq {
+  int64 killer_id = 1;
+  int64 killed_id = 2;
+  string weapon = 3;
+}
+service LobbyRoom {
+  rpc RoomUpdated(google.protobuf.Empty) returns (FP.Hunt.RoomEvent);
+  rpc GetStatus(google.protobuf.Empty) returns (FP.Hunt.GameSessionStatus);
+  rpc GetState(google.protobuf.Empty) returns (FP.Hunt.GameSessionState);
+  rpc UpdateInfo(FP.Hunt.GameSessionCustomData) returns (google.protobuf.Empty);
+  rpc GetRoomMissionData(google.protobuf.Empty) returns (FP.Hunt.RoomMissionData);
+  rpc AppendMissionReplayData(FP.Hunt.GameSessionReplayData) returns (google.protobuf.Empty);
+  rpc UpdateGameSessionRemainingTime(FP.Hunt.UpdateGameSessionRemainingTimeReq) returns (google.protobuf.Empty);
+  rpc UpdateAllTeamExtractedBounty(FP.Hunt.AllTeamExtractedBounty) returns (google.protobuf.Empty);
+  rpc Cheat_GetState(google.protobuf.Empty) returns (FP.Hunt.GameSessionState);
+}
+service LobbyService {
+  rpc CreateSession(FP.Hunt.CreateSessionReq) returns (FP.Hunt.GameSessionId);
+  rpc JoinThroughInviteCode(FP.Hunt.JoinThroughInviteCodeReq) returns (FP.Hunt.JoinThroughInviteCodeRsp);
+  rpc GetInviteCode(FP.Hunt.GetInviteCodeReq) returns (FP.Hunt.GetInviteCodeRsp);
+  rpc KickPlayer(FP.Hunt.KickPlayerReq) returns (google.protobuf.Empty);
+  rpc AddPlayersToLobby(FP.Hunt.AddPlayersToLobbyReq) returns (google.protobuf.Empty);
+  rpc LeaveSession(FP.Hunt.LeaveSessionReq) returns (google.protobuf.Empty);
+  rpc LeaveCurrentLobby(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc RemovePlayerFromSession(FP.Hunt.RemovePlayerFromSessionReq) returns (google.protobuf.Empty);
+  rpc SetPlayerMutableStateSelf(FP.Hunt.SetPlayerMutableStateSelfReq) returns (FP.Hunt.LobbyErrorCodeRsp);
+  rpc PlayerConfirmReady(FP.Hunt.SetPlayerMutableStateSelfReq) returns (FP.Hunt.LobbyErrorCodeRsp);
+  rpc SetPlayerSpawnPositionSelf(FP.Hunt.SetPlayerSpawnPositionSelfReq) returns (FP.Hunt.LobbyErrorCodeRsp);
+  rpc ReportSuspectedMatchmakingFailure(FP.Hunt.ReportSuspectedMatchmakingFailureReq) returns (google.protobuf.Empty);
+  rpc SetPlayerCustomDataSelf(FP.Hunt.SetPlayerCustomDataSelfReq) returns (google.protobuf.Empty);
+  rpc ChangeGameSessionCustomData(FP.Hunt.ChangeGameSessionCustomDataReq) returns (FP.Hunt.LobbyErrorCodeRsp);
+  rpc PromoteSelfToLobbyHost(FP.Hunt.PromoteSelfToLobbyHostReq) returns (FP.Hunt.LobbyErrorCodeRsp);
+  rpc GetSessionList(google.protobuf.Empty) returns (FP.Hunt.GameSessionList);
+  rpc GetRegionList(google.protobuf.Empty) returns (FP.Hunt.GetRegionListRsp);
+  rpc Invite(FP.Hunt.SessionInviteReq) returns (google.protobuf.Empty);
+  rpc RespondToInvitation(FP.Hunt.SessionInvitationResp) returns (google.protobuf.Empty);
+  rpc InviteStream(google.protobuf.Empty) returns (FP.Hunt.SessionInvitationRespWrap);
+  rpc PlayerKillDeath(FP.Hunt.PlayerKillDeathReq) returns (google.protobuf.Empty);
+  rpc GetLobby(google.protobuf.Empty) returns (FP.Hunt.GetLobbyRsp);
+  rpc SetLobbyCustomData(FP.Hunt.LobbyCustomData) returns (FP.Hunt.LobbyCustomDataRsp);
+  rpc GetLobbyCustomData(FP.Hunt.GetLobbyCustomDataReq) returns (FP.Hunt.LobbyCustomDataRsp);
+  rpc GetAllLobbyCustomData(google.protobuf.Empty) returns (FP.Hunt.LobbyCustomDataRsp);
+  rpc StartSession(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc MigrateTo(FP.Hunt.JoinSessionReq) returns (google.protobuf.Empty);
+  rpc _TouchInvitationRespWrap(FP.Hunt.SessionInvitationRespWrap) returns (google.protobuf.Empty);
+}

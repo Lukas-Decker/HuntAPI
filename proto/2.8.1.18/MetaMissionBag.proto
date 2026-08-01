@@ -1,0 +1,182 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "MetaCommon.proto";
+import "Mission.proto";
+import "EHunterStatus.proto";
+
+message MissionGoalProgress {
+  int32 goal_id = 1;
+  repeated int32 condition_progress = 2;
+}
+message MetaMissionBagGoalProgress {
+  repeated FP.Hunt.MissionGoalProgress goal_progress = 1;
+}
+message AccoladeWon {
+  int32 id = 1;
+  int32 gems = 2;
+  int32 priority = 3;
+  int32 tier = 4;
+  int32 hits = 5;
+  int32 bounty = 6;
+  int32 exp = 7;
+  int32 gold = 8;
+  int32 generated_gems = 9;
+  bool generated_gems_zeroed = 10;
+  int32 live_event_points = 11;
+  int32 hunter_exp = 12;
+  int32 hunter_points = 13;
+  int32 blood_line_exp = 14;
+}
+message RewardTrackRewardId {
+  int32 reward_track_id = 1;
+  int32 reward_index = 2;
+}
+message MetaMissionBag {
+  enum State {
+    Empty = 0;
+    MissionStarted = 1;
+    MissionFinished = 2;
+    ContentsDumped = 3;
+  }
+  message RewardEvent {
+    FP.Hunt.RewardType reward_type = 1;
+    int32 event_type = 2;
+    int32 object_id = 3;
+    int32 amount = 4;
+  }
+  message Gift {
+    int64 gifter_profile_id = 1;
+    int32 reward_event_index = 2;
+  }
+  message BountyToken {
+    int32 id = 1;
+    int32 bounty = 2;
+    string bossNameId = 3;
+    bool extracted_mid_mission = 4;
+  }
+  message LiveEventInfo {
+    message Reward {
+      int32 meta_stage_db_index = 1;
+      int32 reward_index = 2;
+    }
+    int32 total_boost_value = 1;
+    int32 user_boost_value = 17;
+    int32 global_boost_value = 18;
+    int32 boost_uses = 2;
+    int32 points_cap = 3;
+    int32 points_summary_no_cap = 4;
+    int32 points_bl_mission_start = 5;
+    int32 points_bl_mission_end = 6;
+    uint32 stage = 7;
+    int32 gifts_given = 8;
+    int32 gifts_leftover_added = 9;
+    int32 gifts_leftover_consumed = 10;
+    bool meta_stage_finished = 11;
+    int32 meta_stage_index = 12;
+    repeated FP.Hunt.MetaMissionBag.LiveEventInfo.Reward reward_track_rewards = 13;
+    bool meta_stage_changed = 14;
+    int32 boost_darksight_range = 15;
+    int32 live_event_db_id = 16;
+  }
+  message Player {
+    int64 profile_id = 1;
+    int32 mm_rating = 2;
+    bool proximity_to_me = 3;
+    repeated int32 pickedup_bounty_ts = 4;
+    repeated int32 killed_by_me_ts = 5;
+    repeated int32 killed_me_ts = 6;
+    FP.Hunt.EMMMode matchmaking_mode = 7;
+    bool activated_wellspring_qp = 8;
+    string blood_line_name = 9;
+    bool proximity_to_team_mate = 10;
+    repeated int32 killed_by_team_mate_ts = 11;
+    repeated int32 killed_team_mate_ts = 12;
+    repeated int32 downed_by_me_ts = 13;
+    repeated int32 downed_me_ts = 14;
+    repeated int32 downed_by_team_mate_ts = 15;
+    repeated int32 downed_team_mate_ts = 16;
+    int32 extracted_bounty = 17;
+    bool team_extraction = 18;
+    bool soul_survivor_qp = 19;
+    int32 extraction_ts = 20;
+    string blood_line_anon_name = 21;
+    bool is_bot = 22;
+  }
+  message Team {
+    int32 mm_rating = 1;
+    repeated FP.Hunt.MetaMissionBag.Player players = 2;
+    bool is_invitation = 3;
+  }
+  FP.Hunt.MetaMissionBag.State state = 1;
+  bool dead = 2;
+  repeated int32 health_chunks = 3;
+  int32 character_id = 4;
+  int64 mission_log_id = 5;
+  repeated int64 consumables_used = 6;
+  bool saved_by_death_cheat = 7;
+  repeated FP.Hunt.MetaMissionBag.Gift gifts = 9;
+  repeated FP.Hunt.MetaMissionBag.RewardEvent reward_events = 11;
+  repeated FP.Hunt.MetaMissionBag.BountyToken bounty_tokens = 12;
+  int32 mission_end_reason_game = 10;
+  FP.Hunt.MissionEndReason mission_end_reason = 13;
+  FP.Hunt.MissionEndAction mission_end_action = 14;
+  repeated FP.Hunt.MetaLootBox loot_boxes = 16;
+  int64 bosses_in_mission = 18;
+  int32 overcap_blood_line_exp = 21;
+  bool is_quick_play = 22;
+  int32 gems = 23;
+  string mission_template_name = 24;
+  int32 skill_based_pvp_rating = 25;
+  bool used_quick_play_character = 26;
+  bool reward_quick_play_character = 27;
+  bool reward_quick_play_full_value_items = 28;
+  FP.Hunt.MetaMissionBagGoalProgress meta_goal_progress = 29;
+  repeated int64 team_mates_profile_ids = 30;
+  int32 bloodline_prestige_bonus_exp = 32;
+  int32 hunter_prestige_bonus_exp = 33;
+  int32 mission_duration = 34;
+  bool is_tutorial = 35;
+  int32 global_prestige_bonus_exp = 36;
+  int64 mission_counter = 37;
+  repeated FP.Hunt.AccoladeWon accolades = 38;
+  int32 mission_time_ms_last_killed_by_player = 39;
+  int32 times_killed = 40;
+  FP.Hunt.MetaSerPlayerCharDesc player_char = 41;
+  FP.Hunt.MetaMissionBag.LiveEventInfo live_event_info = 42;
+  FP.Hunt.EHunterStatus hunter_status = 43;
+  int64 time_start_utc = 44;
+  int32 fbe_bonus_hunter_exp = 45;
+  int32 fbe_bonus_gold = 46;
+  bool fbe_final_stack_achieved = 47;
+  FP.Hunt.MetaBloodLineStats stats = 48;
+  repeated int32 removed_traits = 49;
+  bool add_new_hunter = 57;
+  bool no_bloodline_xp = 58;
+  int32 hunter_marks_earned = 60;
+  repeated FP.Hunt.MetaMissionBag.Team teams = 54;
+  repeated int64 players_killed_me = 55;
+  repeated int64 players_i_killed = 56;
+  repeated int32 faction_pacts_choosen_deltas = 61;
+  bool is_challenge_mission = 50;
+  repeated FP.Hunt.MetaSerPvEChallengeProgress challenge_mission_progress = 51;
+  string game_sub_mode = 59;
+  int32 exp_boost_pct = 62;
+  int32 gold_boost_pct = 63;
+  int32 live_event_points_boost_pct = 64;
+  int32 exp_from_boost = 65;
+  int32 gold_from_boost = 66;
+  int32 live_event_points_from_boost = 67;
+}
+message MetaMissionBagUpdate {
+  FP.Hunt.MetaBloodLineId id = 1;
+  FP.Hunt.MetaMissionBag mission_bag = 2;
+  FP.Hunt.MetaMissionBagGoalProgress goal_progress_only = 3;
+  FP.Hunt.MetaCharStats char_stats = 11;
+  FP.Hunt.MetaLastMatchInfo last_match_dedi_info = 12;
+  repeated string tutorial_goals = 14;
+  uint32 update_id = 15;
+}
+message MetaMissionBagGroupUpdate {
+  repeated FP.Hunt.MetaMissionBagUpdate updates = 1;
+}

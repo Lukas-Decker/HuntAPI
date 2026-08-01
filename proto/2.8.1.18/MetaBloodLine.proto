@@ -1,0 +1,544 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "EUserType.proto";
+import "MetaCommon.proto";
+import "MetaDiscounts.proto";
+import "MetaMissionBag.proto";
+import "UserInfo.proto";
+import "MetaReleaseManager.proto";
+import "MetaCosmetics.proto";
+
+enum MetaCharState {
+  Active = 0;
+  Retired = 1;
+  Dead = 2;
+}
+enum MetaCharSlotType {
+  None = 0;
+  Tools = 1;
+  Consumables = 2;
+  MainWeapon = 3;
+  SecondaryWeapon = 4;
+  CustomAmmo = 5;
+}
+enum MetaCharSlotGroupId {
+  CSG_MainWeapon = 0;
+  CSG_SecondaryWeapon = 1;
+  CSG_Tools = 2;
+  CSG_MainCustomAmmo = 3;
+  CSG_SecondaryCustomAmmo = 4;
+  AmountGroupSlots = 5;
+}
+enum SlotGroupSizes {
+  option allow_alias = true;
+  SGS_DummyVal0 = 0;
+  SGS_Weapons = 2;
+  SGS_Tools = 8;
+  SGS_CustomAmmo = 2;
+}
+enum MetaBlueprintState {
+  BS_Locked = 0;
+  BS_Unlocked = 1;
+  BS_Owned = 2;
+}
+enum MetaDiceRollRewardType {
+  Gold = 0;
+  BigGold = 1;
+  Gems = 2;
+  BigGems = 3;
+  HunterSlot = 4;
+  BloodlineXP = 5;
+  UpgradePoints = 6;
+  LegendaryItemInstance = 7;
+  LegendaryCharUnlock = 8;
+  LegendaryItemUnlock = 9;
+  ItemInstance = 10;
+  LoadoutSlot = 11;
+  Count = 12;
+}
+enum MetaLiveEventState {
+  LES_NoEvent = 0;
+  LES_Started = 1;
+  LES_Ended = 2;
+}
+enum TimerCheatsParam {
+  TimerCheat_Nothing = 0;
+  TimerCheat_Reset = 1;
+  TimerCheat_Next = 2;
+  TimerCheat_NowPlus1 = 3;
+  TimerCheat_Plus1 = 4;
+  TimerCheat_Now = 5;
+  TimerCheat_Synq = 6;
+}
+message MetaPublicInfo {
+  message CharmLink {
+    int32 charm_simple_id = 1;
+    int32 item_simple_id = 2;
+  }
+  message ProfileCustomElem {
+    FP.Hunt.MetaObjectId object_id = 1;
+    float value = 2;
+    int32 ref_id = 3;
+  }
+  FP.Hunt.MetaSerPlayerChar player_char = 1;
+  int32 rank = 2;
+  int32 prestige = 3;
+  FP.UserInfo user = 4;
+  bool tutorial_enabled = 5;
+  int64 profile_id = 6;
+  string name = 7;
+  FP.Hunt.MetaBloodLineStats stats = 8;
+  bool opt_out_public_stats = 9;
+  int64 quickplay_model_id = 10;
+  bool player_is_newbie = 11;
+  bool valid_data = 12;
+  int32 mm_rating = 13;
+  uint32 event_points = 14;
+  repeated FP.Hunt.MetaPublicInfo.CharmLink charm_links = 15;
+  repeated FP.Hunt.MetaPublicInfo.ProfileCustomElem profile_custom_elems = 16;
+  string nakama_id = 17;
+}
+message MetaBloodLineCoreInfo {
+  string name = 1;
+  int32 gold = 2;
+  int32 exp = 3;
+  int32 rank = 4;
+  int32 prestige = 5;
+  string currCharName = 6;
+  int32 currCharLevel = 7;
+  int64 onlineTime = 8;
+  int64 playedInGameTime = 9;
+  int64 time_stamp = 10;
+  int32 gems = 11;
+  FP.Hunt.MetaBloodLineSkillRating skill_rating = 12;
+  int32 away_days = 13;
+  int64 mission_counter = 14;
+}
+message MetaSerCharInventory {
+  message SlotGroup {
+    FP.Hunt.MetaCharSlotType type = 1;
+    repeated FP.Hunt.MetaSerItemInstance slots = 2;
+  }
+  repeated FP.Hunt.MetaSerCharInventory.SlotGroup slot_groups = 1;
+}
+message MetaRecruitInfo {
+  string class = 1;
+  int32 rnd_seed = 2;
+  int32 blood_line_rank = 3;
+}
+message MetaSerPlayerChar {
+  string name = 1;
+  FP.Hunt.MetaCharState state = 2;
+  int32 id = 3;
+  FP.Hunt.MetaGender gender = 4;
+  int32 level = 5;
+  int32 exp = 6;
+  int32 tier = 7;
+  int32 gold_cost = 8;
+  int32 hunter_points = 9;
+  int64 model_id = 13;
+  bool is_legendary = 14;
+  int32 legendary_id = 15;
+  bool is_tutorial = 16;
+  string name_ui = 17;
+  int64 time_enable_fbe = 18;
+  int32 stage = 19;
+  repeated int32 health_chunks = 50;
+  repeated int64 traits_id = 60;
+  FP.Hunt.MetaSerCharInventory inventory = 70;
+  FP.Hunt.MetaCharStats stats = 71;
+  FP.Hunt.MetaRecruitInfo recruit_info = 72;
+  repeated FP.Hunt.MetaSerCustomAttribute custom_attributes = 73;
+}
+message MetaSerGoalInProgress {
+  int32 goal_id = 1;
+  repeated int32 condition_progress = 2;
+  bool is_reward_claimable = 3;
+}
+message MetaSerTimedQuestsSet {
+  int32 id = 1;
+  bool is_active = 2;
+  int64 start_time = 3;
+  int32 mission_counter = 4;
+}
+message MetaSerTimedQuestsPeriod {
+  int32 id = 1;
+  int64 end_time = 2;
+  repeated FP.Hunt.MetaSerTimedQuestsSet sets = 3;
+}
+message MetaSerTimedQuestsInfo {
+  FP.Hunt.MetaSerTimedQuestsPeriod active_period = 1;
+  int64 next_update_time = 2;
+}
+message MetaSerQuestLineGoal {
+  int32 goal_id = 1;
+  int32 mission_counter = 2;
+}
+message MetaSerQuestLineAct {
+  repeated FP.Hunt.MetaSerQuestLineGoal goals = 1;
+  int32 stars_progress = 2;
+  bool is_available = 3;
+  bool has_finished = 4;
+  int32 mission_counter = 5;
+}
+message MetaSerQuestLine {
+  int32 quest_line_id = 1;
+  repeated FP.Hunt.MetaSerQuestLineAct acts = 2;
+  bool is_active = 3;
+  bool has_been_active = 4;
+  int32 mission_counter = 5;
+}
+message MetaSerQuestLinesInfo {
+  repeated FP.Hunt.MetaSerQuestLine quest_lines = 1;
+  repeated int32 active_goals = 2;
+}
+message MetaStoryChallengesInfo {
+  repeated FP.Hunt.MetaStoryChallenge story_challenges = 1;
+  int64 next_update_time = 2;
+  int32 tracked_id = 3;
+}
+message MetaStoryChallenge {
+  enum State {
+    WaitingDateStart = 0;
+    WaitingUnlock = 1;
+    Active = 2;
+    Ended = 3;
+    EndedNeverActive = 4;
+  }
+  enum ChapterState {
+    CWaitingDateStart = 0;
+    CWaitingPrevChapter = 1;
+    CActive = 2;
+    CWaitingRewardClaim = 3;
+    CDone = 4;
+  }
+  int32 id = 1;
+  FP.Hunt.MetaStoryChallenge.State state = 2;
+  repeated FP.Hunt.MetaStoryChallenge.ChapterState chapter_states = 3;
+  int32 sigils = 4;
+  int32 sigils_spent = 5;
+}
+message MetaLoadout {
+  message ItemGroup {
+    repeated int32 simple_ids = 1;
+  }
+  string name = 1;
+  repeated FP.Hunt.MetaLoadout.ItemGroup item_groups = 2;
+}
+message MetaSerTimedGoalSlot {
+  enum State {
+    InProgress = 0;
+    Inactive = 1;
+  }
+  FP.Hunt.MetaSerTimedGoalSlot.State state = 1;
+  int32 assigned_goal_id = 2;
+  int64 expiry_unix_timestamp = 3;
+}
+message MetaSerItemInstance {
+  int64 id = 1;
+  int32 amount = 2;
+  int32 gold_sell_value = 3;
+  int32 mud = 4;
+}
+message MetaLegendaryRecruit {
+  int32 id = 1;
+  repeated int64 traits = 2;
+  repeated int32 health_chunks = 3;
+  int32 traitGroupId = 4;
+  int32 hunter_points = 5;
+}
+message MetaGemsExpiration {
+  int64 date_acquired = 1;
+  int64 date_expires = 2;
+  int32 gems_left = 3;
+}
+message SequentialPackState {
+  enum TypeElem {
+    Item = 0;
+    Hunter = 1;
+    None = 255;
+  }
+  message ElemId {
+    FP.Hunt.SequentialPackState.TypeElem type = 1;
+    int32 id = 2;
+  }
+  int32 id = 1;
+  repeated FP.Hunt.SequentialPackState.ElemId elems_done = 2;
+  FP.Hunt.SequentialPackState.ElemId next = 3;
+  int32 reshuffles_done = 4;
+  int32 last_release_pack_reset = 5;
+}
+message MetaLiveEvent {
+  message MetaStageInfo {
+    repeated bool ui_flags = 1;
+  }
+  message StageInfo {
+    repeated int32 meta_stages_db_indexes = 1;
+    repeated FP.Hunt.MetaLiveEvent.MetaStageInfo meta_stages_info = 2;
+  }
+  FP.Hunt.MetaLiveEventState state = 1;
+  uint32 instance_id = 2;
+  uint32 db_id = 3;
+  int32 points_total = 4;
+  int32 points_game = 5;
+  int32 points_twitch = 6;
+  int32 points_twitch_on_hold = 7;
+  int32 points_on_hold = 8;
+  int32 points_community_contribution = 9;
+  int32 gifts_leftover = 10;
+  repeated int32 bundles_purchased_times = 11;
+  int32 stage = 12;
+  repeated bool ui_global_flags = 13;
+  int32 boost_index = 23;
+  int64 boost_time_end = 24;
+  repeated bool loyalty_bonus_conditions = 26;
+  bool loyalty_bonus_reward_given = 27;
+  repeated int32 point_packs_purchased_times = 28;
+  bool premium_enabled = 29;
+  int32 meta_stage_runtime = 20;
+  repeated FP.Hunt.MetaLiveEvent.StageInfo stages_info = 21;
+  bool meta_stage_selected = 22;
+  int32 amount_items_refunded = 14;
+  int32 gems_from_refunded_items = 15;
+  int32 gifts_given = 16;
+  int32 total_boost_time_seconds = 25;
+  int32 leaderboard_reward_index = 30;
+  repeated int32 faction_pacts_choosen = 31;
+  int32 hunter_marks_earned = 33;
+  bool check_delayed_boost = 32;
+}
+message MetaSerRewardTracksProgress {
+  int32 id = 1;
+  int32 points = 2;
+  repeated int64 bitarray_reward_indexes_attributed = 3;
+}
+message MetaSerBloodLineRecruits {
+  repeated FP.Hunt.MetaSerPlayerChar normal = 1;
+  repeated FP.Hunt.MetaSerPlayerChar quick_play = 2;
+  FP.Hunt.MetaLegendaryRecruit generated_legendary = 3;
+}
+message MetaSerBloodLineHunters {
+  repeated FP.Hunt.MetaSerPlayerChar active = 1;
+  repeated FP.Hunt.MetaSerPlayerChar inactive = 2;
+  int32 num_loadout_slots = 3;
+  repeated FP.Hunt.MetaLoadout loadouts = 4;
+}
+message MetaSerBloodLineGoals {
+  repeated FP.Hunt.MetaSerGoalInProgress goals_in_progress = 1;
+  repeated FP.Hunt.MetaSerGoalInProgress goals_suspended_in_progress = 2;
+  repeated FP.Hunt.MetaSerTimedGoalSlot daily_timed_goal_slots = 3;
+  repeated int32 daily_timed_goal_history = 4;
+  repeated FP.Hunt.MetaSerTimedGoalSlot weekly_timed_goal_slots = 5;
+  repeated int32 weekly_timed_goal_history = 6;
+  repeated int64 bitarray_goals_completed = 7;
+  FP.Hunt.MetaSerTimedQuestsInfo timed_quests_info = 8;
+  FP.Hunt.MetaSerQuestLinesInfo quest_lines_info = 9;
+  FP.Hunt.MetaStoryChallengesInfo story_challenges_info = 12;
+}
+message MetaSerBloodLineFull {
+  FP.Hunt.MetaSerBloodLineMain main = 1;
+  FP.Hunt.MetaSerBloodLineRecruits recruits = 2;
+  FP.Hunt.MetaMissionBag mission_bag = 3;
+  FP.Hunt.MetaSerBloodLineHunters hunters = 4;
+  FP.Hunt.MetaSerBloodLineGoals goals = 5;
+}
+message PartiallyRefundedDLC {
+  int32 id = 1;
+  int32 refunded_gems = 2;
+}
+message TwitchEntitlementConsumed {
+  string id = 1;
+  string twitch_item_id = 2;
+  int64 date = 3;
+}
+message FirstBountyExtractionInfo {
+  int32 times_stacked = 1;
+  int64 time_for_next_stack = 2;
+  int64 time_lose_stack = 3;
+}
+message DiceRollInfo {
+  int32 available_rolls = 1;
+  int64 time_for_reset = 2;
+  int32 progress = 3;
+  int32 rolls_done = 4;
+}
+message EvolvingHunter {
+  int32 id = 1;
+  int32 stages_unlocked = 2;
+}
+message RedeemCodeDone {
+  int32 campaign_id = 1;
+  int32 bundle_id = 2;
+  int32 reward_pack_id = 3;
+  string code = 4;
+}
+message CharmInfo {
+  int32 simple_id = 1;
+  FP.Hunt.PackedBitArray attached_to = 2;
+}
+message OnlineTimeHistory {
+  repeated int64 data = 1;
+  int64 saved_date = 2;
+  int32 remainder_part_tick = 3;
+}
+message MetaSerBloodLineMain {
+  enum LoadEvent {
+    LE_Nothing = 0;
+    LE_InventoryChanged = 1;
+    LE_EA_TO_RC_CleanUpHappened = 2;
+  }
+  message Arsenal {
+    repeated FP.Hunt.MetaSerItemInstance items = 1;
+    repeated FP.Hunt.MetaBlueprintState blueprints = 2;
+    repeated FP.Hunt.MetaLootBox loot_boxes = 3;
+    repeated FP.Hunt.CharmInfo charms = 4;
+  }
+  int32 version = 1;
+  string name = 2;
+  int32 gold = 3;
+  int32 exp = 4;
+  int32 rank = 5;
+  int32 prestige = 6;
+  int64 time_creation = 7;
+  int32 char_id_counter = 8;
+  int32 curr_char = 9;
+  int32 rnd_seed = 10;
+  int64 profile_id = 12;
+  int64 time_last_free_recruits_generation = 13;
+  int64 online_time = 14;
+  int64 played_in_game_time = 15;
+  int64 time_stamp = 16;
+  int32 recruits_regenerations_left = 17;
+  bool just_created = 18;
+  int64 user_id = 19;
+  FP.EUserType user_type = 37;
+  bool special_recruits_names = 20;
+  FP.Hunt.MetaSerBloodLineMain.LoadEvent last_load_event = 21;
+  int64 last_team_mate_user_id = 22;
+  int32 gems = 23;
+  int32 quick_play_class = 24;
+  int64 quick_play_model_id = 25;
+  int32 num_pre_perma_death_resets = 26;
+  repeated int64 last_team_mates_profile_ids = 27;
+  int32 hunter_slots = 30;
+  bool tutorial_enabled = 31;
+  bool tutorial_done = 32;
+  repeated int64 tutorial_steps_done = 33;
+  bool prestige_exp_bonus_enabled = 34;
+  bool tutorial_mission_bag_dumped = 35;
+  bool aim_mode_selection_done = 36;
+  int64 mission_counter = 38;
+  FP.Hunt.MetaSerBloodLineMain.Arsenal arsenal = 50;
+  FP.Hunt.MetaBloodLineStats stats = 52;
+  FP.Hunt.MetaLastMatchInfo last_match_info = 53;
+  FP.Hunt.MetaBeforeLastMatchInfo before_last_match_info = 54;
+  int32 meta_session = 57;
+  FP.Hunt.MetaSerPlayerChar custom_quick_play_char = 66;
+  repeated int64 unlocked_items = 67;
+  repeated int64 unlocked_traits = 73;
+  repeated int64 unlocked_legendary_chars = 69;
+  repeated int64 owned_dlcs = 70;
+  repeated int64 ever_owned_dlcs = 85;
+  FP.Hunt.MetaBloodLineStats early_access_stats = 71;
+  repeated int64 quick_play_models_list = 72;
+  bool gface_added_gold = 75;
+  repeated FP.Hunt.MetaGemsExpiration gems_not_expired = 76;
+  repeated FP.Hunt.MetaGemsExpiration gems_expired = 77;
+  int32 total_gems_ever_expired = 78;
+  int64 last_booster_pack_purchase_id = 79;
+  repeated FP.Hunt.MetaSerRewardTracksProgress reward_tracks_progress = 82;
+  bool opt_out_public_stats = 83;
+  repeated FP.Hunt.MetaSerPvEChallengeProgress pve_challenge_progress = 84;
+  FP.Hunt.MetaLiveEvent current_live_event = 40;
+  repeated FP.Hunt.PartiallyRefundedDLC partially_refunded_dlcs = 41;
+  repeated FP.Hunt.GenericReward latest_offline_rewards = 42;
+  repeated FP.Hunt.TwitchEntitlementConsumed twitch_entitlements_consumed = 43;
+  int64 twitch_date_pending_show = 44;
+  FP.Hunt.FirstBountyExtractionInfo fbe_info = 80;
+  FP.Hunt.DiceRollInfo dice_roll_info = 86;
+  repeated FP.Hunt.SequentialPackState sequential_packs_in_progress = 87;
+  int64 time_sequential_packs_next_reshuffle_reset = 88;
+  repeated FP.Hunt.EvolvingHunter evolving_hunters = 81;
+  repeated FP.Hunt.RedeemCodeDone redeem_codes_done = 89;
+  repeated FP.Hunt.DiscountEntry private_discounts = 90;
+  int64 servers_downtime_last_check = 91;
+  FP.Hunt.OnlineTimeHistory online_time_history = 92;
+  int64 online_time_total = 93;
+  repeated int64 ui_global_flags = 94;
+  FP.Hunt.PrestigeStartBonusType last_prestige_bonus_type = 95;
+  FP.Hunt.MetaCosmetics cosmetics = 96;
+  repeated int32 default_health_chunks_recruit = 97;
+}
+message MetaPlayerCharUpdate {
+  bool name = 1;
+  bool state = 2;
+  bool gender = 3;
+  bool level = 4;
+  bool exp = 5;
+  bool hunter_points = 6;
+  bool model_and_stage = 7;
+  bool health_chunks = 8;
+  bool traits = 9;
+  bool tier = 10;
+  bool time_enable_fbe = 11;
+  bool custom_attributes = 12;
+  FP.Hunt.MetaSerPlayerChar player_char = 20;
+}
+message MetaBloodLineUpdate {
+  enum CharAction {
+    NoAction = 0;
+    CharDeleteActive = 1;
+    CharDeleteInactive = 2;
+    CharMoveToInactive = 3;
+    CharMoveToActive = 4;
+    CharAddFromRecruit = 5;
+    CharAddFromDemo = 6;
+    CharAddFromRecruitQuickPlay = 7;
+    CharAddFromLegendary = 8;
+    CharSetTutorial = 9;
+    CharAddFromGeneric = 10;
+  }
+  bool name = 1;
+  bool gold = 2;
+  bool exp = 3;
+  bool rank = 4;
+  bool prestige = 5;
+  bool curr_char = 6;
+  bool recruits_regenerations_left = 7;
+  bool gems = 17;
+  bool quick_play_info = 18;
+  bool is_a_micro_trans = 19;
+  bool tutorial = 20;
+  bool last_team_mates = 22;
+  bool meta_session = 24;
+  bool opt_out_public_stats = 26;
+  bool recruits = 27;
+  bool twitch_rewards = 29;
+  bool mission_counter = 31;
+  bool charms = 42;
+  repeated FP.Hunt.MetaBloodLineUpdate.CharAction char_action = 8;
+  repeated int32 action_char_index = 9;
+  bool clear_mission_bag = 10;
+  bool full_blood_line = 11;
+  FP.Hunt.MetaSerBloodLineFull blood_line = 12;
+  FP.Hunt.MetaPlayerCharUpdate player_char_update = 13;
+  int32 blueprint_id = 14;
+  FP.Hunt.MetaBlueprintState blueprint_state = 15;
+  bool goal_progress = 16;
+  bool reward_track_update = 25;
+  bool pve_challenge_progress_update = 28;
+  repeated FP.Hunt.MetaSerPlayerChar complete_player_chars = 23;
+  int32 booster_pack_acquired = 21;
+  int32 live_event_points_from_twitch_last_login = 30;
+  repeated FP.Hunt.DiscountEntry discounts = 32;
+  bool has_discounts = 33;
+  bool has_unhidden_objects_info = 37;
+  repeated FP.Hunt.ReleaseManagerEntry release_manager_entries = 38;
+  bool has_release_manager_data = 39;
+  bool has_sequential_packs = 41;
+  repeated FP.Hunt.GenericReward rewards = 43;
+  int32 discounts_update_counter = 44;
+  int32 release_manager_update_counter = 45;
+  FP.Hunt.MetaUnhiddenInfo unhidden_info = 46;
+}

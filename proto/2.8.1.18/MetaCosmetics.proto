@@ -1,0 +1,14 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "MetaCommon.proto";
+
+message MetaCosmetics {
+  repeated FP.Hunt.MetaObjectId objects_in_profile = 1;
+  repeated FP.Hunt.MetaSerObject avatars = 2;
+  repeated FP.Hunt.MetaSerObject badges = 3;
+  repeated FP.Hunt.MetaSerObject stat_trackers = 4;
+  repeated FP.Hunt.MetaSerObject animations = 5;
+  repeated FP.Hunt.MetaSerObject frames = 6;
+  repeated FP.Hunt.MetaSerObject titles = 7;
+}

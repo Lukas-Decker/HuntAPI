@@ -1,0 +1,10 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "Image.proto";
+import "NewsItemPreview.proto";
+
+message NewsPreviewsRsp {
+  repeated FP.Hunt.NewsItemPreview items = 1;
+  repeated FP.Hunt.Image images = 2;
+}

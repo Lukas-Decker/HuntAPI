@@ -1,0 +1,37 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/timestamp.proto";
+import "NewsItemMain.proto";
+import "ShopItemId.proto";
+import "ShopNewsItem.proto";
+import "LinkTarget.proto";
+import "ENewsItemType.proto";
+
+message NewsFeedItem {
+  uint32 news_item_id = 3;
+  FP.Hunt.ENewsItemType news_item_type = 14;
+  google.protobuf.Timestamp start_date = 8;
+  google.protobuf.Timestamp end_date = 10;
+  bool is_hot_item = 9;
+  bool show_timer = 11;
+  uint32 height = 4;
+  string link_text = 5;
+  string link_target = 6;
+  string content_tag = 12;
+  FP.Hunt.ShopItemId shop_item_id = 7;
+  FP.Hunt.LinkTarget ui_link_target = 13;
+  FP.Hunt.NewsItemMain main = 1;
+  FP.Hunt.ShopNewsItem shop = 2;
+  FP.Hunt.IgwaData igwa_data = 15;
+}
+message IgwaData {
+  bool is_igwa = 1;
+  google.protobuf.Timestamp start_date = 2;
+  google.protobuf.Timestamp end_date = 3;
+  string spotlight_header = 4;
+  string thumbnail_header = 5;
+  string spotlight_text = 6;
+  uint32 spotlight_image_id = 7;
+  uint32 thumbnail_image_id = 8;
+}

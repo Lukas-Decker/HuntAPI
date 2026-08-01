@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "EShopItemType.proto";
+
+message ShopItemId {
+  FP.Hunt.EShopItemType type = 1;
+  uint32 id = 2;
+}

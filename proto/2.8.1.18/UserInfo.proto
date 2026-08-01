@@ -1,0 +1,10 @@
+syntax = "proto3";
+package FP;
+
+import "EUserType.proto";
+
+message UserInfo {
+  FP.EUserType type = 1;
+  int64 id = 2;
+  string id_str = 3;
+}

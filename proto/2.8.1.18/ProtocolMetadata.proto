@@ -1,0 +1,44 @@
+syntax = "proto3";
+package FP;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+import "ProtocolVersion.proto";
+
+enum DefaultInvokingIds {
+  option allow_alias = true;
+  HeartBeatId = 0;
+  SystemCallService = 16777216;
+  AuthLogin = 16777216;
+  AuthLogout = 16777217;
+  GetProtocolInfo = 16777218;
+  SystemCallServiceEnd = 16777219;
+  GrainService = 33554432;
+  ObserverService = 50331648;
+  ObserverUnsubscribeService = 67108864;
+  GatewayExtService = 83886080;
+  EndInvokingId = 127506841;
+}
+message RpcInfo {
+  string name = 1;
+  uint32 id = 2;
+  string channel = 3;
+}
+message InvokeInfo {
+  FP.Version version = 1;
+  repeated FP.RpcInfo rpc_infos = 2;
+}
+message ChannelInfo {
+  uint32 id = 1;
+  string name = 2;
+  uint32 max_pending_messages = 3;
+  uint32 max_part_size = 4;
+}
+message ProtocolInfo {
+  string instance = 3;
+  FP.InvokeInfo invoking_infos = 1;
+  repeated FP.ChannelInfo channel_infos = 2;
+}
+service ProtocolMetadata {
+  rpc GetProtocolInfo(google.protobuf.Empty) returns (FP.ProtocolInfo);
+}

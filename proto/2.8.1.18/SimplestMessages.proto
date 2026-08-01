@@ -1,0 +1,25 @@
+syntax = "proto3";
+package FP;
+
+message NullableUint32Msg {
+  bool has_value = 1;
+  uint32 value = 2;
+}
+message BytesMsg {
+  bytes data = 1;
+}
+message Uint32Msg {
+  uint32 data = 1;
+}
+message BoolMsg {
+  bool data = 1;
+}
+message StringMsg {
+  string data = 1;
+}
+message Uint32sArrayMsg {
+  repeated uint32 items = 1;
+}
+message StringsArrayMsg {
+  repeated string items = 1;
+}

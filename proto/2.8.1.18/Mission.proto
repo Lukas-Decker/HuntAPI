@@ -1,0 +1,270 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/timestamp.proto";
+import "Common.proto";
+import "SimplestMessages.proto";
+import "UserInfo.proto";
+
+enum MissionGameMode {
+  SIMPLE = 0;
+  BOUNTY_HUNT = 1;
+  CHALLENGE = 2;
+  DUMMY = 3;
+  SHOOTING_RANGE = 4;
+  REPLAY = 5;
+}
+enum EMMPlatform {
+  eMMPlatform_All = 0;
+  eMMPlatform_Steam = 1;
+  eMMPlatform_Console = 2;
+  eMMPlatform_Xbox = 3;
+  eMMPlatform_PS = 4;
+  eMMPlatform_WeGame = 5;
+  eMMPlatform_PC = 6;
+  eMMPlatform_Windows = 7;
+}
+enum EMMMode {
+  eMMMode_Fair = 0;
+  eMMMode_Full = 1;
+}
+enum EBotDifficulty {
+  EBotDifficulty_None = 0;
+  EBotDifficulty_Easy = 1;
+  EBotDifficulty_Medium = 2;
+  EBotDifficulty_Hard = 3;
+}
+enum EMissionRandomizationStage {
+  MISSION = 0;
+  SESSION = 1;
+}
+message MatchmakingOption {
+  message TeamSizes {
+    bool Solo = 1;
+    bool Duo = 2;
+    bool Trio = 3;
+  }
+  FP.Hunt.MatchmakingOption.TeamSizes lobby_team_sizes = 1;
+  FP.Hunt.MatchmakingOption.TeamSizes game_session_team_sizes = 2;
+  repeated FP.Hunt.EMMPlatform platforms = 3;
+  bool all_in_one_for_team_mm = 4;
+  bool use_rank_for_team_mm = 5;
+  FP.Hunt.EMMMode mode = 6;
+  bool allow_invited_teammates = 7;
+}
+message TeamCompositionSettings {
+  int32 minPlayersPerSession = 1;
+  int32 maxPlayersPerSession = 2;
+  int32 minPlayersPerTeam = 3;
+  int32 maxPlayersPerTeam = 4;
+  int32 minPlayersForFair = 5;
+}
+message ActiveMissionData {
+  string mission_guid = 1;
+  string template_name = 2;
+  string level_name = 3;
+  FP.Hunt.MissionGameMode game_mode = 4;
+  int32 mission_random_seed = 5;
+  repeated string intended_regions = 6;
+  FP.NullableUint32Msg stage = 9;
+  FP.TimeRange duration = 7;
+  FP.Hunt.TeamCompositionSettings team_composition_settings = 8;
+  bool is_wild_card = 10;
+}
+message PlayerInTeamInfo {
+  int64 profile_id = 1;
+  int32 player_index = 2;
+  FP.UserInfo user_info = 3;
+  bool is_bot = 4;
+  FP.Hunt.EBotDifficulty bot_difficulty = 5;
+}
+message TeamDescription {
+  string team_name = 1;
+  repeated FP.Hunt.PlayerInTeamInfo players = 2;
+  bool has_bot_in_team = 3;
+}
+message SpawnPointPerPlayer {
+  int64 profile_id = 1;
+  uint32 spawn_point_id = 2;
+}
+message TeamSpawnAssignment {
+  string team_name = 1;
+  repeated uint32 available_spawn_point_ids = 2;
+  repeated FP.Hunt.SpawnPointPerPlayer spawn_points_per_player = 3;
+}
+message BountyHuntRegionAreaList {
+  repeated string area_names = 1;
+}
+message BountyHuntRegionAreaDeactivationStages {
+  repeated FP.Hunt.BountyHuntRegionAreaList areas_per_stage = 1;
+  FP.Hunt.BountyHuntRegionAreaList final_stage = 2;
+}
+message BountyHuntPerRegionSettings {
+  string region_name = 1;
+  string target_name = 2;
+  string target_spawn_area = 3;
+  FP.Hunt.BountyHuntRegionAreaDeactivationStages area_deactivation_stages = 4;
+  int32 target_bounty_amount = 5;
+  bool has_target = 6;
+}
+message BountyHuntPlayerSetting {
+  int32 bounty_bonus_per_token = 2;
+  int64 profile_id = 3;
+  FP.Hunt.MatchmakingOption matchmaking_option = 4;
+}
+message CommonPlayerSetting {
+  int64 profile_id = 1;
+  int32 avg_mm_rating = 2;
+  bool is_crossplay = 3;
+  int32 mm_rating = 4;
+  bool is_invitation = 5;
+  FP.Hunt.EMMMode matchmaking_mode = 6;
+}
+message MaxRatingRule {
+  int32 game_amount_from = 1;
+  int32 game_amount_to = 2;
+  int32 max_rating = 3;
+}
+message PvPRatingSettings {
+  int32 rank_threshold = 1;
+  int32 initial_rating = 2;
+  int32 magic_coefficient = 3;
+  repeated FP.Hunt.MaxRatingRule max_rating_rules = 4;
+}
+message RoomMissionDataBountyHunt {
+  repeated FP.Hunt.TeamSpawnAssignment team_spawn_assignments = 1;
+  string template_desc_name = 2;
+  FP.Hunt.EMissionRandomizationStage region_radomization = 10;
+  string region_composition_desc_name = 3;
+  uint32 region_props_index = 9;
+  repeated FP.Hunt.BountyHuntPerRegionSettings region_settings = 4;
+  string sub_mode = 5;
+  repeated FP.Hunt.BountyHuntExtractionPointSettings extraction_points = 6;
+  repeated FP.Hunt.BountyHuntResupplyPointSettings resupply_points = 7;
+  FP.Hunt.EMissionRandomizationStage mission_time_of_day_randomization = 11;
+  string mission_time_of_day = 8;
+  FP.Hunt.PvPRatingSettings pvp_rating_settings = 14;
+  repeated FP.Hunt.BountyHuntPlayerSetting player_settings = 13;
+  map<string, FP.Hunt.TimeOfDays> override_tod_per_level = 15;
+}
+message RoomMissionDataChallenge {
+  string template_desc_name = 1;
+  string mission_time_of_day = 2;
+  uint32 spawn_point_id = 3;
+}
+message RoomMissionDataShootingRange {
+  string template_desc_name = 1;
+  FP.Hunt.EMissionRandomizationStage mission_time_of_day_randomization = 2;
+  string mission_time_of_day = 3;
+  bool is_pvp_enabled = 4;
+}
+message RoomMissionDataReplay {
+  string template_desc_name = 1;
+  string mission_time_of_day = 2;
+  uint32 spawn_point_id = 3;
+}
+message ActionPoint {
+  string guid = 1;
+  uint32 entity_id = 2;
+  uint32 point_index = 3;
+}
+message ActionPointPose {
+  float world_x = 1;
+  float world_y = 2;
+  float world_z = 3;
+  float rot_quat_x = 4;
+  float rot_quat_y = 5;
+  float rot_quat_z = 6;
+  float rot_quat_w = 7;
+}
+message BountyHuntExtractionPointSettings {
+  FP.Hunt.ActionPoint point = 1;
+  FP.Hunt.ActionPointPose pose = 2;
+}
+message BountyHuntResupplyPointSettings {
+  FP.Hunt.ActionPoint point = 1;
+  FP.Hunt.ActionPointPose pose = 2;
+  repeated uint32 discovered_by_team_idx = 3;
+}
+message LiveEventMissionData {
+  uint32 live_event_template_id = 1;
+  uint32 time_span_since_start_seconds = 2;
+  uint32 live_event_stage = 3;
+  uint32 time_span_since_stage_change_seconds = 4;
+}
+message RoomMissionData {
+  string mission_guid = 1;
+  string template_name = 2;
+  string template_desc_name = 20;
+  string template_desc_guid = 21;
+  FP.Hunt.MissionGameMode game_mode = 3;
+  int32 mission_random_seed = 4;
+  int32 session_random_seed = 5;
+  repeated FP.Hunt.TeamDescription teams = 6;
+  FP.Hunt.RoomMissionDataBountyHunt bounty_hunt_data = 10;
+  FP.Hunt.RoomMissionDataChallenge challenge_data = 13;
+  FP.Hunt.RoomMissionDataShootingRange shooting_range_data = 17;
+  FP.Hunt.RoomMissionDataReplay replay_data = 19;
+  int32 spawn_point_selection_time = 7;
+  string level_name = 8;
+  FP.Hunt.TeamCompositionSettings team_composition_settings = 9;
+  int64 mission_log_id = 11;
+  repeated FP.Hunt.CommonPlayerSetting common_player_settings = 12;
+  FP.Hunt.LiveEventMissionData live_event_mission_data = 14;
+  bool should_ignore_expected_players = 15;
+  int64 creation_time = 16;
+  bool has_bots_in_match = 18;
+}
+message ActiveMissionDetailData {
+  FP.Hunt.ActiveMissionData brief_data = 1;
+  FP.Hunt.RoomMissionDataBountyHunt bounty_hunt_data = 10;
+  FP.Hunt.RoomMissionDataChallenge challenge_data = 11;
+  FP.Hunt.RoomMissionDataShootingRange shooting_range_data = 12;
+}
+message GetMultipleActiveMissionsRsp {
+  google.protobuf.Timestamp version_timestamp = 1;
+  repeated FP.Hunt.ActiveMissionDetailData missions = 2;
+}
+message GetMultipleMissionTemplatesRsp {
+  repeated string template_name = 1;
+}
+message TimeOfDays {
+  message TimeOfDayProbability {
+    string time_of_day = 1;
+    float probability = 2;
+  }
+  string default_time_of_day = 1;
+  repeated FP.Hunt.TimeOfDays.TimeOfDayProbability values = 2;
+}
+message RandomMissionReq {
+  string template_name = 1;
+  uint32 count = 2;
+  string override_mission_sub_mode = 3;
+  int32 override_min_players_for_fair = 14;
+  int32 override_min_players_per_session = 4;
+  int32 override_max_players_per_session = 5;
+  int32 override_min_players_per_team = 9;
+  int32 override_max_players_per_team = 10;
+  FP.NullableUint32Msg stage = 13;
+  repeated string intended_regions = 6;
+  FP.TimeRange duration = 7;
+  int32 override_mission_random_seed = 11;
+  int32 override_session_random_seed = 12;
+  bool is_wild_card = 15;
+  map<string, FP.Hunt.TimeOfDays> override_tod_per_level = 16;
+}
+message RemoveMissionsReq {
+  repeated string mission_guids = 1;
+}
+message MissionFailedReq {
+  string mission_guid = 1;
+}
+message GetActiveMissionDetailsReq {
+  repeated string mission_guids = 1;
+}
+message GetActiveMissionDetailsRsp {
+  repeated FP.Hunt.ActiveMissionDetailData details = 1;
+}
+message MissionUpdatesStreamEvent {
+  FP.Hunt.GetMultipleActiveMissionsRsp data = 1;
+}

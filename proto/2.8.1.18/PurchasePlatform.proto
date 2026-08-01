@@ -1,0 +1,133 @@
+syntax = "proto3";
+package PurchasePlatforms;
+
+import "google/protobuf/timestamp.proto";
+import "UserInfo.proto";
+
+enum ECurrencyCode {
+  AED = 0;
+  ARS = 1;
+  AUD = 2;
+  BRL = 3;
+  CAD = 4;
+  CHF = 5;
+  CLP = 6;
+  CNY = 7;
+  COP = 8;
+  CRC = 9;
+  EUR = 10;
+  GBP = 11;
+  HKD = 12;
+  ILS = 13;
+  IDR = 14;
+  INR = 15;
+  JPY = 16;
+  KRW = 17;
+  KWD = 18;
+  KZT = 19;
+  MXN = 20;
+  MYR = 21;
+  NOK = 22;
+  NZD = 23;
+  PEN = 24;
+  PHP = 25;
+  PLN = 26;
+  QAR = 27;
+  RUB = 28;
+  SAR = 29;
+  SGD = 30;
+  THB = 31;
+  TRY = 32;
+  TWD = 33;
+  UAH = 34;
+  USD = 35;
+  UYU = 36;
+  VND = 37;
+  ZAR = 38;
+}
+enum EOrderStatus {
+  EOrderStatus_Failed = 0;
+  EOrderStatus_Inactive = 1;
+  EOrderStatus_Initialized = 2;
+  EOrderStatus_InProcess = 3;
+  EOrderStatus_Finalized = 4;
+  EOrderStatus_Refunded = 5;
+  EOrderStatus_PartialRefund = 6;
+  EOrderStatus_Chargedback = 7;
+}
+enum EOrderResolution {
+  Unknown = 0;
+  Pending = 1;
+  Fulfilled = 2;
+  Invalid = 3;
+}
+enum ResponseStatus {
+  Failure = 0;
+  Success = 1;
+}
+message PurchasedItem {
+  uint32 amount = 1;
+  string description = 2;
+  uint32 quantity = 3;
+  int32 item_id = 4;
+}
+message InitRequest {
+  string language = 1;
+  FP.UserInfo user_info = 2;
+  int64 profile_id = 3;
+  int64 order_id = 4;
+  PurchasePlatforms.ECurrencyCode currency_code = 5;
+  string country = 7;
+  repeated PurchasePlatforms.PurchasedItem items = 6;
+}
+message InitResponse {
+  PurchasePlatforms.ResponseStatus status = 1;
+  string failure_reason = 2;
+  int32 platform_error_code = 3;
+  int64 transaction_id = 4;
+  PurchasePlatforms.InitRequest init_request = 5;
+}
+message PlatformOrderInfo {
+  int64 order_id = 1;
+  int64 transaction_id = 2;
+  FP.UserInfo user_info = 3;
+  PurchasePlatforms.EOrderStatus status = 4;
+  PurchasePlatforms.ECurrencyCode currency_code = 5;
+  google.protobuf.Timestamp time = 6;
+  string country = 7;
+  repeated PurchasePlatforms.PurchasedItem items = 8;
+  int32 version = 9;
+  PurchasePlatforms.EOrderResolution resolution = 10;
+}
+message PlatformOrderInfoResponse {
+  PurchasePlatforms.ResponseStatus status = 1;
+  string failure_reason = 2;
+  int32 platform_error_code = 3;
+  PurchasePlatforms.PlatformOrderInfo platform_order_info = 4;
+}
+message VerificationInfo {
+  int64 order_id = 1;
+  int64 transaction_id = 2;
+  int32 version = 3;
+}
+message PlatformRefundInfo {
+  int64 order_id = 1;
+  int64 transaction_id = 2;
+  bool successfull = 3;
+}
+message VerificationResponse {
+  PurchasePlatforms.ResponseStatus status = 1;
+  string failure_reason = 2;
+  int32 platform_error_code = 3;
+  PurchasePlatforms.VerificationInfo verification_info = 4;
+}
+message PurchasePlatformInfo {
+  PurchasePlatforms.ECurrencyCode currency_code = 1;
+  string country = 2;
+}
+message PurchasePlatformInfoResponse {
+  PurchasePlatforms.ResponseStatus status = 1;
+  string failure_reason = 2;
+  int32 platform_error_code = 3;
+  PurchasePlatforms.PurchasePlatformInfo platformInfo = 4;
+}

@@ -1,0 +1,97 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "MetaCommon.proto";
+
+enum GridSetup {
+  NoGrid = 0;
+  Grid_3x3 = 1;
+  Grid_5x4 = 2;
+  NoGrid_News = 3;
+}
+enum Featured {
+  FT_No = 0;
+  FT_Filter = 1;
+  FT_Featured = 2;
+}
+message DiscountEntry {
+  enum Type {
+    Item = 0;
+    Hunter = 1;
+    Bundle = 2;
+    BoosterPack = 3;
+    MetaObject = 4;
+  }
+  message BundleInfo {
+    string name = 1;
+    repeated int32 items = 2;
+    repeated int32 hunters = 3;
+    repeated FP.Hunt.MetaObjectId meta_objects = 4;
+  }
+  message BoosterPackInfo {
+    int32 base_gems = 1;
+    int32 bonus_gems = 2;
+    repeated FP.Hunt.RealMoneyPrice discounted_prices = 3;
+    string ui_string = 4;
+    bool show_original_price = 5;
+  }
+  int32 discount_id = 1;
+  FP.Hunt.DiscountEntry.Type type = 2;
+  int32 object_id = 3;
+  int64 date_start = 4;
+  int64 date_end = 5;
+  int32 discount_pct = 6;
+  int32 discounted_price = 7;
+  FP.Hunt.DiscountEntry.BundleInfo bundle = 8;
+  FP.Hunt.DiscountEntry.BoosterPackInfo booster_pack = 9;
+  FP.Hunt.MetaObjectType meta_object_type = 10;
+}
+message DiscountsGrainData {
+  int32 last_id = 1;
+  repeated FP.Hunt.DiscountEntry discounts = 2;
+  repeated string update_grain_keys = 3;
+}
+message DiscountsRsp {
+  enum Code {
+    _unused_code = 0;
+    Ok = 1;
+    _validation_errors = 2;
+    DiscountValueInvalid = 3;
+    UnknownItem = 4;
+    UnknownHunter = 5;
+    EndDateEarlierThanStartDate = 6;
+    DateConflict = 7;
+    ItemCanNotBeDiscounted = 8;
+    HunterCanNotBeDiscounted = 9;
+    DiscountAlreadyEnded = 10;
+    DateEndInvalidValue = 11;
+    DateStartInvalidValue = 12;
+    UnknownBoosterPack = 13;
+    UnknownMetaObject = 14;
+    MetaObjectCanNotBeDiscounted = 15;
+    UnknownStoryChallenge = 16;
+    StoryChallengeCanNotBeDiscounted = 17;
+    EmptyBundle = 18;
+    _internal_errors = 20;
+    CouldNotUpdateCache = 21;
+    UnknownCommand = 22;
+  }
+  FP.Hunt.DiscountsRsp.Code code = 1;
+  int32 index_entry_error = 2;
+  repeated FP.Hunt.DiscountEntry discounts = 3;
+}
+message DiscountsCommand {
+  enum Cmd {
+    UnusedCode = 0;
+    GetDiscounts = 1;
+    AddDiscounts = 2;
+    ModifyDiscounts = 3;
+    DeleteDiscounts = 4;
+    StopDiscounts = 5;
+  }
+  FP.Hunt.DiscountsCommand.Cmd cmd_code = 1;
+  repeated FP.Hunt.DiscountEntry discounts = 2;
+}
+message DiscountsLogs {
+  repeated string logs = 1;
+}

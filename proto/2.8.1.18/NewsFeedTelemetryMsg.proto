@@ -1,0 +1,12 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "AuthToken.proto";
+import "NewsFeedTelemetryItem.proto";
+import "UserInfo.proto";
+
+message NewsFeedTelemetryMsg {
+  FP.Hunt.AuthToken token = 1;
+  FP.UserInfo user_info = 2;
+  repeated FP.Hunt.NewsFeedTelemetryItem news_feed_items = 3;
+}

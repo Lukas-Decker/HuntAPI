@@ -1,0 +1,14 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "InGamePurchase.proto";
+import "ServiceExt.proto";
+
+service InGamePurchase {
+  rpc InitTransaction(FP.Hunt.InitTransactionRequest) returns (FP.Hunt.IngamePurchaseOrderId);
+  rpc FinalizeTransaction(FP.Hunt.IngamePurchaseOrderId) returns (google.protobuf.Empty);
+  rpc GetPaymentInfo(google.protobuf.Empty) returns (FP.Hunt.PaymentInfoResponse);
+  rpc GetAvailablePurchaseableItems(google.protobuf.Empty) returns (FP.Hunt.AvailablePurchaseableItems);
+  rpc VerifyStoreItemsOwnership(FP.Hunt.StoreItemsOwnershipReq) returns (FP.Hunt.StoreItemsOwnershipRsp);
+}

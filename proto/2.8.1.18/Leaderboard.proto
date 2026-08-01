@@ -1,0 +1,60 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "ServiceExt.proto";
+import "UserInfo.proto";
+
+enum ELeaderboardOrderKey {
+  ELeaderboard_KdRatio = 0;
+  ELeaderboard_HunterKills = 1;
+  ELeaderboard_HunterDeaths = 2;
+  ELeaderboard_KillStreak = 3;
+  ELeaderboard_BanishingStreak = 4;
+  ELeaderboard_SalvationStreak = 6;
+  ELeaderboard_WellspringsActivated = 7;
+}
+enum ELeaderboardByGameType {
+  eLeaderboardByGameType_BountyHunt = 0;
+  eLeaderboardByGameType_QuickPlay = 1;
+}
+message UserInfoBasic {
+  int64 profile_id = 1;
+  FP.UserInfo user = 2;
+  string name = 3;
+  uint32 prestige = 4;
+  uint32 rank = 5;
+}
+message UserStatsCommon {
+  float kd_ratio = 1;
+  uint32 hunters_kills_with_assists = 2;
+  uint32 hunters_deaths = 3;
+  uint32 player_assists = 4;
+}
+message UserStatsBountyHunt {
+  uint32 kill_streak = 1;
+  uint32 banishing_streak = 2;
+}
+message UserStatsQuickPlay {
+  uint32 wellsprings_activated = 1;
+  uint32 salvation_streak = 2;
+}
+message LeaderboardItem {
+  FP.Hunt.UserInfoBasic user_info_basic = 1;
+  FP.Hunt.UserStatsCommon user_stats_common = 2;
+  FP.Hunt.UserStatsBountyHunt user_stats_bounty_hunt = 3;
+  FP.Hunt.UserStatsQuickPlay user_stats_quick_play = 4;
+}
+message Leaderboard {
+  FP.Hunt.LeaderboardItem current_player = 1;
+  uint32 current_player_position = 2;
+  repeated FP.Hunt.LeaderboardItem items = 3;
+}
+message GetLeaderboardReq {
+  bool include_other_platforms = 5;
+  FP.Hunt.ELeaderboardOrderKey order_key = 1;
+  FP.Hunt.ELeaderboardByGameType type = 2;
+  repeated FP.UserInfo user_infos = 4;
+}
+service LeaderboardService {
+  rpc Get(FP.Hunt.GetLeaderboardReq) returns (FP.Hunt.Leaderboard);
+}

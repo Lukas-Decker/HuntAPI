@@ -1,0 +1,13 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+import "EulaMessage.proto";
+
+service EulaService {
+  rpc GetState(FP.Hunt.GetEulaStateReq) returns (FP.Hunt.GetEulaStateRsp);
+  rpc AcceptEula(FP.Hunt.AcceptEulaReq) returns (FP.Hunt.AcceptEulaRsp);
+  rpc GetUsageShareState(google.protobuf.Empty) returns (FP.Hunt.GetUsageShareStateRsp);
+  rpc AllowUsageShare(FP.Hunt.AllowUsageShareReq) returns (google.protobuf.Empty);
+}

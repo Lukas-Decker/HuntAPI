@@ -1,0 +1,16 @@
+syntax = "proto3";
+package FP.Infrastructure;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+
+message IpList {
+  repeated string ips = 1;
+  int32 port = 2;
+}
+message ServersResponse {
+  map<string, FP.Infrastructure.IpList> servers_dictionary = 1;
+}
+service Infrastructure {
+  rpc GetPingableServersIps(google.protobuf.Empty) returns (FP.Infrastructure.ServersResponse);
+}

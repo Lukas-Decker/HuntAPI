@@ -1,0 +1,7 @@
+syntax = "proto3";
+package FP.Hunt;
+
+message NewsFeedTelemetryItem {
+  uint32 news_item_id = 1;
+  uint64 time_ms = 2;
+}

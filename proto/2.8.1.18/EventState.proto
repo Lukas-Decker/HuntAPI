@@ -1,0 +1,13 @@
+syntax = "proto3";
+package FP.Hunt;
+
+message EventState {
+  bool event_active = 1;
+  uint32 event_template_id = 2;
+  uint32 event_stage = 5;
+  uint64 score = 6;
+  uint64 goal = 7;
+  uint32 time_until_stop_seconds = 3;
+  uint32 time_span_since_start_seconds = 4;
+  uint32 time_span_since_stage_change_seconds = 8;
+}

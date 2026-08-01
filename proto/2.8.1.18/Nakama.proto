@@ -1,0 +1,29 @@
+syntax = "proto3";
+package FP;
+
+import "ServiceExt.proto";
+
+enum ENakamaCode {
+  OK = 0;
+  NAKAMA_ERROR = 1;
+  ACCOUNT_NOT_LINKED = 2;
+  LINK_CONFLICT = 3;
+}
+message NakamaConnectReq {
+  string token = 1;
+  string refresh_token = 2;
+}
+message NakamaConnectRsp {
+  FP.ENakamaCode code = 1;
+}
+message NakamaDisconnectReq {
+  string token = 1;
+  string refresh_token = 2;
+}
+message NakamaDisconnectRsp {
+  FP.ENakamaCode code = 1;
+}
+service NakamaSvc {
+  rpc Connect(FP.NakamaConnectReq) returns (FP.NakamaConnectRsp);
+  rpc Disconnect(FP.NakamaDisconnectReq) returns (FP.NakamaDisconnectRsp);
+}

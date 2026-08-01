@@ -1,0 +1,17 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "EShopFeaturedState.proto";
+import "EShopFilterState.proto";
+import "EShopItemType.proto";
+import "ETelemetryAction.proto";
+
+message ShopTelemetryItem {
+  FP.Hunt.ETelemetryAction action = 1;
+  FP.Hunt.EShopItemType item_type = 2;
+  uint32 item_id = 3;
+  FP.Hunt.EShopFilterState filter_state = 6;
+  FP.Hunt.EShopFeaturedState featured_state = 7;
+  uint32 count = 4;
+  uint64 time_ms = 5;
+}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package FP;
+
+enum EUserType {
+  eUserType_Internal = 0;
+  eUserType_Steam = 1;
+  eUserType_Wegame = 2;
+  eUserType_Oculus = 3;
+  eUserType_Xbox = 4;
+  eUserType_Ps = 5;
+  eUserType_Windows = 6;
+  eUserType_Nakama = 7;
+}

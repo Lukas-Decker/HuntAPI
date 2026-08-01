@@ -1,0 +1,12 @@
+syntax = "proto3";
+package FP;
+
+import "google/protobuf/timestamp.proto";
+
+message TimeRange {
+  google.protobuf.Timestamp begin = 1;
+  google.protobuf.Timestamp end = 2;
+}
+message ReleasePack {
+  string value = 1;
+}

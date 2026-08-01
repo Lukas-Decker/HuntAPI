@@ -1,0 +1,14 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "MissionStatusRsp.proto";
+import "ServiceExt.proto";
+import "DsConnectionInfo.proto";
+
+service MissionReconnectService {
+  rpc DsReadyStream(google.protobuf.Empty) returns (FP.Hunt.DsConnectionInfo);
+  rpc GetStatus(google.protobuf.Empty) returns (FP.Hunt.MissionStatusRsp);
+  rpc Reconnect(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc DeclineReconnect(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

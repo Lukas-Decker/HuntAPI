@@ -1,0 +1,14 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/timestamp.proto";
+import "ENewsItemType.proto";
+
+message NewsItemPreview {
+  uint32 news_item_id = 1;
+  FP.Hunt.ENewsItemType news_item_type = 6;
+  google.protobuf.Timestamp date = 2;
+  google.protobuf.Timestamp endDate = 5;
+  uint32 image_id = 3;
+  repeated string blocks = 4;
+}

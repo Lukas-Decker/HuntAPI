@@ -1,0 +1,49 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+
+enum EChatGroup {
+  Private = 0;
+  GameSession = 1;
+  Team = 2;
+}
+enum EChatEvent {
+  ChatGroupCreated = 0;
+  NewMsgReceived = 1;
+}
+message ChatMsg {
+  int64 speaker_id = 1;
+  FP.Hunt.EChatGroup chat_group = 2;
+  string text = 3;
+  int64 receiver_id = 4;
+  string chat_group_id = 5;
+}
+message ChatGroup {
+  FP.Hunt.EChatGroup group = 1;
+  string id = 2;
+}
+message SendChatResponse {
+  bool ok = 1;
+  string message = 2;
+}
+message ChatEvent {
+  FP.Hunt.EChatEvent event = 1;
+  FP.Hunt.ChatGroup group = 2;
+  FP.Hunt.ChatMsg msg = 3;
+}
+message ChatRemoteMuteEvent {
+  bool banTeamChatInput = 1;
+  bool banTeamChatOutput = 2;
+  bool banProximityChatInput = 3;
+  bool banProximityChatOutput = 4;
+}
+service ChatService {
+  rpc SendMsg(FP.Hunt.ChatMsg) returns (google.protobuf.Empty);
+  rpc ChatStream(google.protobuf.Empty) returns (FP.Hunt.ChatEvent);
+  rpc ChatRemoteMute(google.protobuf.Empty) returns (FP.Hunt.ChatRemoteMuteEvent);
+}
+service ChatTestService {
+  rpc SendChat(FP.Hunt.ChatMsg) returns (FP.Hunt.SendChatResponse);
+}

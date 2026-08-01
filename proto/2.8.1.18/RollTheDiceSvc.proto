@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "ServiceExt.proto";
+import "SimplestMessages.proto";
+
+service RollTheDiceSvc {
+  rpc IsButtonEnabled(FP.StringMsg) returns (FP.BoolMsg);
+}

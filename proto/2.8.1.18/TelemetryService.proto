@@ -1,0 +1,14 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+import "ShopTelemetryMsg.proto";
+import "NewsFeedTelemetryMsg.proto";
+import "NewsItemLinkClickTelemetryMsg.proto";
+
+service TelemetryService {
+  rpc ReportShop(FP.Hunt.ShopTelemetryMsg) returns (google.protobuf.Empty);
+  rpc ReportNewsFeed(FP.Hunt.NewsFeedTelemetryMsg) returns (google.protobuf.Empty);
+  rpc ReportNewsItemLinkClick(FP.Hunt.NewsItemLinkClickTelemetryMsg) returns (google.protobuf.Empty);
+}

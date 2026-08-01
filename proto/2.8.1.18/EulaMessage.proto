@@ -1,0 +1,42 @@
+syntax = "proto3";
+package FP.Hunt;
+
+enum ESonySalesRegion {
+  SCEE = 0;
+  SCEA = 1;
+  SCEJA = 2;
+}
+enum EEulaStatus {
+  Accepted = 0;
+  Disabled = 1;
+  Pending = 2;
+}
+enum EAcceptEulaStatus {
+  Success = 0;
+  EulaDisabled = 1;
+  NewVersionAvailable = 2;
+  InvalidVersion = 3;
+}
+message GetEulaStateReq {
+  FP.Hunt.ESonySalesRegion ps_region = 1;
+  string locale = 2;
+}
+message GetEulaStateRsp {
+  FP.Hunt.EEulaStatus status = 1;
+  int32 accepted_version = 2;
+  int32 latest_version = 3;
+  string eula_url = 4;
+  string policy_url = 5;
+}
+message AcceptEulaReq {
+  int32 version = 1;
+}
+message AcceptEulaRsp {
+  FP.Hunt.EAcceptEulaStatus status = 1;
+}
+message GetUsageShareStateRsp {
+  bool enabled = 1;
+}
+message AllowUsageShareReq {
+  bool enabled = 1;
+}

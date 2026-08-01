@@ -1,0 +1,16 @@
+syntax = "proto3";
+package FP;
+
+import "google/protobuf/descriptor.proto";
+
+enum ServiceType {
+  User = 0;
+  System = 1;
+}
+enum MethodType {
+  ReqRsp = 0;
+  PubSub = 1;
+}
+message AccessGroupOption {
+  repeated string ids = 1;
+}

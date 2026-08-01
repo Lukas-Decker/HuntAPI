@@ -1,0 +1,12 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "ServiceExt.proto";
+import "MetaTelemetry.proto";
+
+service MissionLogService {
+  rpc Log(FP.Hunt.LogMissionEventBundle) returns (google.protobuf.Empty);
+  rpc LogTutorial(FP.Hunt.LogMissionEventBundle) returns (google.protobuf.Empty);
+  rpc LogPveChallenge(FP.Hunt.LogMissionEventBundle) returns (google.protobuf.Empty);
+}

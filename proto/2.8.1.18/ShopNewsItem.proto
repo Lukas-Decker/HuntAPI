@@ -1,0 +1,9 @@
+syntax = "proto3";
+package FP.Hunt;
+
+message ShopNewsItem {
+  bool display_in_shop = 5;
+  uint32 image_id = 2;
+  string title = 3;
+  string body = 4;
+}

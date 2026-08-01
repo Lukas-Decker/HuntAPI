@@ -1,0 +1,21 @@
+syntax = "proto3";
+package FP;
+
+import "ServiceExt.proto";
+
+message XboxTokens {
+  string session_token = 1;
+  string entra_id_token_collections = 2;
+  string entra_id_token_purchase = 3;
+}
+message UpdateTokensReq {
+  string license_token = 1;
+  string user_collections_id_key = 2;
+  string user_purchase_id_key = 3;
+}
+message UpdateTokensRsp {
+  uint32 code = 1;
+}
+service MsStore {
+  rpc UpdateTokens(FP.UpdateTokensReq) returns (FP.UpdateTokensRsp);
+}

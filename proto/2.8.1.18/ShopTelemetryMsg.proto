@@ -1,0 +1,12 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "AuthToken.proto";
+import "ShopTelemetryItem.proto";
+import "UserInfo.proto";
+
+message ShopTelemetryMsg {
+  FP.Hunt.AuthToken token = 1;
+  FP.UserInfo user_info = 2;
+  repeated FP.Hunt.ShopTelemetryItem shop_items = 3;
+}

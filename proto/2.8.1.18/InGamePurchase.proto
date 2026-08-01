@@ -1,0 +1,58 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "PurchasePlatform.proto";
+import "MetaRequest.proto";
+import "MetaBloodLine.proto";
+
+enum InGamePurchaseErrors {
+  eInGamePurchase_Invalid = 0;
+  eInGamePurchase_TransactionInitFailed = 3600;
+  eInGamePurchase_TransactionVerificationFailed = 3601;
+}
+message InitTransactionRequest {
+  int64 profile_id = 1;
+  string country = 2;
+  PurchasePlatforms.ECurrencyCode currency = 3;
+  string language = 4;
+  int32 item_id = 5;
+  int32 price = 6;
+  string description = 7;
+}
+message IngamePurchaseOrderId {
+  int64 orderId = 1;
+}
+message PaymentInfoResponse {
+  PurchasePlatforms.ResponseStatus status = 1;
+  string failure_reason = 2;
+  int32 platform_error_code = 3;
+  PurchasePlatforms.ECurrencyCode currency = 4;
+  string country = 5;
+}
+message MicroTransDone {
+  int32 item_id = 1;
+  PurchasePlatforms.ECurrencyCode currency = 2;
+  uint32 price = 3;
+}
+message PurchaseableItemPrice {
+  PurchasePlatforms.ECurrencyCode currency = 1;
+  int32 amount = 2;
+}
+message PurchaseableItem {
+  int32 id = 1;
+  string description = 2;
+  repeated FP.Hunt.PurchaseableItemPrice price = 3;
+}
+message AvailablePurchaseableItems {
+  repeated FP.Hunt.PurchaseableItem items = 1;
+}
+message StoreItemsOwnershipReq {
+  repeated int32 dlc_ids = 1;
+  repeated int32 bbpack_ids = 2;
+}
+message StoreItemsOwnershipRsp {
+  FP.Hunt.MetaReqRsp.Code code = 1;
+  repeated int32 acquired_dlc_ids = 2;
+  repeated int32 acquired_bbpack_ids = 3;
+  FP.Hunt.MetaBloodLineUpdate update = 4;
+}

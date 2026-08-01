@@ -1,0 +1,7 @@
+syntax = "proto3";
+package FP.Hunt;
+
+message NewsItemMainBlock {
+  string text = 1;
+  uint32 image_id = 2;
+}

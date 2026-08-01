@@ -1,0 +1,10 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "EUserType.proto";
+
+message NewsPreviewsReq {
+  string language = 1;
+  FP.EUserType platform = 2;
+  repeated uint32 cached_images_ids = 3;
+}

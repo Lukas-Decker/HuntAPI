@@ -1,0 +1,10 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "NewDsClientReadyReq.proto";
+import "ServiceExt.proto";
+
+service MissionReconnectDsService {
+  rpc NotifyClientAboutDsReadiness(FP.Hunt.NewDsClientReadyReq) returns (google.protobuf.Empty);
+}

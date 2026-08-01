@@ -1,0 +1,45 @@
+syntax = "proto3";
+package FP.Hunt;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "ServiceExt.proto";
+import "HuntLobby.proto";
+import "SessionPlayerLoc.proto";
+import "SimplestMessages.proto";
+
+message GameFoundEvent {
+  uint32 token = 1;
+  FP.Hunt.SessionPlayerLoc player_loc = 2;
+}
+message MatchMakingToken {
+  uint32 token = 1;
+}
+message MultipleMatchMakingToken {
+  repeated FP.Hunt.MatchMakingToken tokens = 1;
+}
+message TeamTypeCoeffcient {
+  float solo = 1;
+  float matchmaking_duo = 2;
+  float invitation_duo = 3;
+  float matchmaking_trio = 4;
+  float invitation_trio = 5;
+}
+message MMRatingCoefficient {
+  FP.Hunt.TeamTypeCoeffcient team_type_coeffcient = 1;
+}
+message MatchMakingOptions {
+  int32 lobby_max_team_size = 1;
+  int32 game_session_max_team_size = 2;
+  bool allow_crossplay = 3;
+  int32 rank_threshold = 4;
+  int32 rating_below_threshold = 5;
+  FP.Hunt.MMRatingCoefficient mmrating_coeffcient = 6;
+}
+service MatchMaking {
+  rpc Request(FP.Hunt.CreateSessionReq) returns (FP.Hunt.MultipleMatchMakingToken);
+  rpc CancelRequest(FP.Hunt.MultipleMatchMakingToken) returns (FP.BoolMsg);
+  rpc GetMatchMakingOptions(google.protobuf.Empty) returns (FP.Hunt.MatchMakingOptions);
+  rpc GetPlayerSoloMMRating(google.protobuf.Empty) returns (google.protobuf.Int32Value);
+  rpc GameFound(google.protobuf.Empty) returns (FP.Hunt.GameFoundEvent);
+}

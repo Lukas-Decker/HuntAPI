@@ -1,0 +1,36 @@
+syntax = "proto3";
+package FP;
+
+enum RespErrorCode {
+  option allow_alias = true;
+  Success = 0;
+  SuccessNoChange = 1;
+  SuccessEventualConsistency = 2;
+  SuccessEquivalent = 3;
+  SuccessHeartBeat = 9;
+  ErrorsBegin = 10;
+  LowLevelErrorsBegin = 10;
+  GeneralError = 10;
+  RpcNotFound = 12;
+  ServiceUnavailable = 13;
+  FepOverload = 15;
+  RequestTimeout = 16;
+  UnauthenticatedRequest = 17;
+  BaseProtocolMismatch = 18;
+  LowLevelErrorsEnd = 1000;
+}
+message ReqHeader {
+  uint32 invoking_id = 1;
+  int64 grain_id = 2;
+  uint32 message_id = 3;
+  int32 body_length = 4;
+  string trace_parent = 5;
+}
+message ResHeader {
+  uint32 message_id = 1;
+  int32 body_length = 2;
+  uint32 error_code = 3;
+  string error_message = 4;
+  uint32 unsubscribe_id = 5;
+  int64 server_time = 6;
+}

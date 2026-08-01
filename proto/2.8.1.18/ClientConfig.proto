@@ -1,0 +1,10 @@
+syntax = "proto3";
+package FP;
+
+message ClientConfig {
+  uint32 ping_interval_seconds = 1;
+  uint32 good_ping_max_ms = 2;
+  uint32 normal_ping_max_ms = 3;
+  string otlp_endpoint = 4;
+  float otlp_sample_rate = 5;
+}
