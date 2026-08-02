@@ -38,6 +38,7 @@ binary; match results now exist only on the wire. See
 
 ```bash
 pip install -r requirements.txt
+python tools/gen_bindings.py    # compile proto/ into huntapi/pb (needed for ingest/history)
 ```
 
 Python 3.11+. The game install is auto-detected through the Steam registry entry and
@@ -73,6 +74,8 @@ Other commands:
 | `unlocks` | diff the last two `attributes.xml` snapshots, resolved to item names |
 | `servers --ping` | Hunt's live front-ends by region, with TCP handshake latency |
 | `watch` | follow `Game.log` as you play |
+| `ingest <blob>` | decode a raw `MetaMissionBag` into full match history |
+| `history` | list decoded matches: map, duration, mode, death, PvP rating, players |
 
 `unlocks` resolves numeric ids to real names through Hunt-ify's item catalog, so a diff
 reads `Unlocks/0/1001  Crimson Varnish` rather than a bare integer.
@@ -112,9 +115,29 @@ python tools/diff_protos.py proto/2.8.1.18 proto/2.8.2.0
 Added and removed RPCs, messages, enum values and field-number changes all come out, so
 a decoder breaking is a visible diff rather than a mystery.
 
+## Match history
+
+The `MetaMissionBag` decoder is built and tested: it turns one wire blob into a full
+match record - every player's MMR and bot flag, a timestamped kill/down graph, bounty,
+end reason - stored across `bags` / `bag_players` / `bag_kills`. Feed it a blob:
+
+```bash
+python -m huntapi ingest match.bin
+python -m huntapi history
+```
+
+Two things are worth knowing before you count on this:
+
+- **The server keeps no match history.** No RPC reads past matches back; the rich bag is
+  a single transient slot the client drains after each match. Full history can only be
+  built by capturing each bag going forward - see [PLAN.md](PLAN.md) Phase 4.
+- **Getting the bag bytes is the gated step.** The backend is TLS 1.3 with a private CA
+  and the game runs EasyAntiCheat, so there is no zero-risk capture. The methods and
+  their ban implications are laid out in [docs/WIRE_FORMAT.md](docs/WIRE_FORMAT.md)
+  section 9; the decoder is ready for real bytes the moment you choose one.
+
 ## Status
 
 Phases 1-3 of [PLAN.md](PLAN.md) are done: schema recovery, local sources, endpoint
-intelligence. Phase 4, speaking the protocol to Crytek's servers, is deliberately not
-started - it is a terms-of-service decision, not a technical one, and the reasoning is
-written up in the plan.
+intelligence. Phase 4's decoder and storage are done and tested; the capture step and the
+active client are gated on a keying decision with ban implications, explained in the plan.

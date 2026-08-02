@@ -17,6 +17,7 @@ from pathlib import Path
 from . import catalog, config, paths
 from .sources import attributes, gamelog
 from .store import Store
+from .wire import mission_bag
 
 DEFAULT_DB = "hunt.db"
 DEFAULT_CACHE = ".cache/endpoints.json"
@@ -111,6 +112,55 @@ def _describe(name: str, items: catalog.Catalog) -> str:
     return name
 
 
+def cmd_ingest(args) -> int:
+    """Decode one or more raw MetaMissionBag blobs into the match-history tables."""
+    blobs = [Path(p) for p in args.files]
+    added = skipped = failed = 0
+    with Store(args.db) as store:
+        for path in blobs:
+            try:
+                raw = path.read_bytes()
+                match = mission_bag.decode(raw)
+            except Exception as exc:  # a truncated or wrong-type blob should not abort the batch
+                print(f"  {path.name}: decode failed ({exc})")
+                failed += 1
+                continue
+            if store.add_bag(match, raw=raw):
+                added += 1
+                print(f"  {path.name}: {match.summary()}")
+            else:
+                skipped += 1
+        print(f"\ningested {added}, already had {skipped}, failed {failed} "
+              f"(total {store.count_bags()} matches)")
+    return 1 if failed and not added else 0
+
+
+def cmd_history(args) -> int:
+    with Store(args.db) as store:
+        rows = store.recent_bags(args.limit)
+        if not rows:
+            print("No decoded matches yet. See docs/WIRE_FORMAT.md for how bags are captured,\n"
+                  "then feed them in with 'huntapi ingest <blob>'.")
+            return 0
+        print(f"{'start (utc)':<20} {'map':<18} {'dur':>6} {'mode':<11} {'died':<5} "
+              f"{'pvp':>5} {'players':>7}")
+        for row in rows:
+            when = _fmt_utc(row["time_start_utc"])
+            mode = "QuickPlay" if row["is_quick_play"] else (row["game_sub_mode"] or "BountyHunt")
+            mapname = (row["mission_template"] or "?").rsplit("/", 1)[-1]
+            print(f"{when:<20} {mapname:<18} {row['mission_duration_s'] or 0:>5}s "
+                  f"{mode:<11} {('yes' if row['dead'] else 'no'):<5} "
+                  f"{row['skill_based_pvp_rating'] or 0:>5} {row['num_players'] or 0:>7}")
+    return 0
+
+
+def _fmt_utc(ts: int | None) -> str:
+    if not ts:
+        return "?"
+    from datetime import datetime, timezone
+    return datetime.fromtimestamp(ts, timezone.utc).strftime("%Y-%m-%d %H:%M")
+
+
 def cmd_servers(args) -> int:
     endpoints = config.load_cached(args.cache, env=args.env)
     grouped = config.regions(endpoints, pc_only=not args.all_platforms)
@@ -163,6 +213,14 @@ def build_parser() -> argparse.ArgumentParser:
     unlocks.add_argument("--items", type=Path, help="Hunt-ify structured/items directory")
     unlocks.add_argument("-n", "--limit", type=int, default=40)
     unlocks.set_defaults(func=cmd_unlocks)
+
+    ingest = sub.add_parser("ingest", help="decode raw MetaMissionBag blobs into match history")
+    ingest.add_argument("files", nargs="+", help="one or more .bin files, each a MetaMissionBag")
+    ingest.set_defaults(func=cmd_ingest)
+
+    history = sub.add_parser("history", help="list decoded full match records")
+    history.add_argument("-n", "--limit", type=int, default=20)
+    history.set_defaults(func=cmd_history)
 
     servers = sub.add_parser("servers", help="list Hunt's live front-end endpoints")
     servers.add_argument("--env", default=config.DEFAULT_ENV)

@@ -53,6 +53,63 @@ CREATE TABLE IF NOT EXISTS snapshot_attrs (
     value       TEXT,
     PRIMARY KEY (snapshot_id, name)
 ) WITHOUT ROWID;
+
+-- Full match records decoded from MetaMissionBag (the wire payload).
+CREATE TABLE IF NOT EXISTS bags (
+    key                     TEXT PRIMARY KEY,
+    captured_at             TEXT NOT NULL,
+    state                   TEXT,
+    is_quick_play           INTEGER,
+    is_tutorial             INTEGER,
+    game_sub_mode           TEXT,
+    mission_template        TEXT,
+    mission_counter         INTEGER,
+    mission_duration_s      INTEGER,
+    time_start_utc          INTEGER,
+    dead                    INTEGER,
+    hunter_status           TEXT,
+    mission_end_reason      TEXT,
+    mission_end_action      TEXT,
+    skill_based_pvp_rating  INTEGER,
+    times_killed            INTEGER,
+    character_name          TEXT,
+    character_level         INTEGER,
+    bosses_in_mission       INTEGER,
+    num_teams               INTEGER,
+    num_players             INTEGER,
+    my_profile_id           INTEGER,
+    raw                     BLOB
+);
+CREATE INDEX IF NOT EXISTS bags_start ON bags(time_start_utc);
+
+CREATE TABLE IF NOT EXISTS bag_players (
+    match_key         TEXT NOT NULL REFERENCES bags(key) ON DELETE CASCADE,
+    team_index        INTEGER,
+    profile_id        INTEGER,
+    blood_line_name   TEXT,
+    is_bot            INTEGER,
+    mm_rating         INTEGER,
+    matchmaking_mode  TEXT,
+    extracted_bounty  INTEGER,
+    team_extraction   INTEGER,
+    extraction_ts     INTEGER,
+    killed_by_me      INTEGER,
+    killed_me         INTEGER,
+    downed_by_me      INTEGER,
+    downed_me         INTEGER,
+    proximity_to_me   INTEGER,
+    PRIMARY KEY (match_key, team_index, profile_id)
+);
+CREATE INDEX IF NOT EXISTS bag_players_profile ON bag_players(profile_id);
+
+CREATE TABLE IF NOT EXISTS bag_kills (
+    match_key       TEXT NOT NULL REFERENCES bags(key) ON DELETE CASCADE,
+    profile_id      INTEGER,
+    team_index      INTEGER,
+    direction       TEXT,
+    mission_time_s  INTEGER
+);
+CREATE INDEX IF NOT EXISTS bag_kills_match ON bag_kills(match_key);
 """
 
 
@@ -162,3 +219,55 @@ class Store:
             "removed": {k: (v, "") for k, v in old.items() if k not in new},
             "changed": {k: (old[k], new[k]) for k in old.keys() & new.keys() if old[k] != new[k]},
         }
+
+    # -- mission bags (full match records) ------------------------------------
+
+    def add_bag(self, match, raw: bytes | None = None) -> bool:
+        """Store a decoded MatchRecord. Returns False if this match was already stored."""
+        if self.db.execute("SELECT 1 FROM bags WHERE key = ?", (match.key,)).fetchone():
+            return False
+        self.db.execute(
+            "INSERT INTO bags VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                match.key, _utc_now(), match.state, int(match.is_quick_play),
+                int(match.is_tutorial), match.game_sub_mode, match.mission_template,
+                match.mission_counter, match.mission_duration_s, match.time_start_utc,
+                int(match.dead), match.hunter_status, match.mission_end_reason,
+                match.mission_end_action, match.skill_based_pvp_rating, match.times_killed,
+                match.character_name, match.character_level, match.bosses_in_mission,
+                match.num_teams, match.num_players, match.my_profile_id, raw,
+            ),
+        )
+        self.db.executemany(
+            "INSERT INTO bag_players VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            [
+                (
+                    p.match_key, p.team_index, p.profile_id, p.blood_line_name,
+                    int(p.is_bot), p.mm_rating, p.matchmaking_mode, p.extracted_bounty,
+                    int(p.team_extraction), p.extraction_ts, p.killed_by_me, p.killed_me,
+                    p.downed_by_me, p.downed_me, int(p.proximity_to_me),
+                )
+                for p in match.players
+            ],
+        )
+        self.db.executemany(
+            "INSERT INTO bag_kills VALUES (?,?,?,?,?)",
+            [(k.match_key, k.profile_id, k.team_index, k.direction, k.mission_time_s)
+             for k in match.kills],
+        )
+        self.db.commit()
+        return True
+
+    def count_bags(self) -> int:
+        return self.db.execute("SELECT COUNT(*) FROM bags").fetchone()[0]
+
+    def recent_bags(self, limit: int = 20) -> list[sqlite3.Row]:
+        return self.db.execute(
+            "SELECT * FROM bags ORDER BY time_start_utc DESC LIMIT ?", (limit,)
+        ).fetchall()
+
+    def bag_players(self, match_key: str) -> list[sqlite3.Row]:
+        return self.db.execute(
+            "SELECT * FROM bag_players WHERE match_key = ? ORDER BY team_index, mm_rating DESC",
+            (match_key,),
+        ).fetchall()

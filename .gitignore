@@ -14,3 +14,6 @@ build/
 # local data
 hunt.db
 .cache/
+# generated protobuf bindings (regenerate with grpc_tools.protoc)
+huntapi/pb/*_pb2.py
+*.bin

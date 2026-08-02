@@ -191,23 +191,40 @@ if Phase 4 never happens.
   covering `ReqHeader`/`ResHeader`, the `RespErrorCode` enum, the grain/subscription
   model, and the login state machine transcribed from `Game.log`.
 
-### Phase 4 - The client protocol (gated - needs your go-ahead)
+### Phase 4 - The client protocol
 
-Only start this once you have decided the ToS question above. Two sub-options, and they
-differ a lot in risk:
+Decision taken: **both, passive first**. Two findings reshaped this phase after it began.
 
-- **4a, passive (recommended first):** observe your own client's traffic to
-  `capi*:61088` and reconstruct the framing from real captures. No fake client, no
-  authentication, nothing sent to Crytek that the game did not already send. This
-  establishes the message-id table and confirms whether the stream is TLS-wrapped
-  (`libssl-1_1.dll` ships with the game, so assume yes and expect to need key material
-  from the process).
-- **4b, active:** implement `huntapi/transport/` - connect, Steam-ticket login via
-  `Auth.Login`, then call `ProfileService.GetProfile`,
+**There is no server-side match history.** No RPC reads past matches back;
+`MissionLogService` is upload-only (all three RPCs return `Empty`). The bloodline keeps
+`last_match_info` (a 14-field summary) and `before_last_match_info` (six progression
+numbers, not a match record). The rich `MetaMissionBag` is a single transient slot with an
+`Empty -> MissionStarted -> MissionFinished -> ContentsDumped` state machine, cleared by
+`Req_ClearMissionBag`. So *full* history can only be built by accumulating forward, one
+bag at a time - no client, official or otherwise, can backfill it.
+
+**Passive is not zero-risk under TLS 1.3.** The front-end speaks TLS 1.3 with a private
+Crytek CA (cert baked into the DLL), the binary has no keylog export, and EasyAntiCheat is
+present. A raw capture is ciphertext; every route to the session keys touches the
+protected process. See [docs/WIRE_FORMAT.md](docs/WIRE_FORMAT.md) section 9.
+
+What is **built and tested** (safe, capture-independent):
+
+- `huntapi/pb/` - Python bindings compiled from the recovered schema.
+- `huntapi/wire/mission_bag.py` - decode a `MetaMissionBag` blob into a normalised
+  (match, players, kills) triple: per-opponent MMR, bot flags, timestamped kill/down
+  graph, bounty, end reason. Validated by a round-trip test (`tests/test_mission_bag.py`).
+- `store.py` gains `bags` / `bag_players` / `bag_kills`; CLI gains `ingest` and `history`.
+
+What is **gated on a keying decision** (has ban implications, not automated):
+
+- obtaining the plaintext bags - one of the methods in WIRE_FORMAT.md section 9.
+- **4b active:** `huntapi/transport/` - TLS connect, `GetProtocolInfo` for the RPC id
+  table, Steam-ticket `Auth.Login`, then `ProfileService.GetProfile`,
   `MatchMaking.GetPlayerSoloMMRating`, `LeaderboardService.Get`,
-  `MetaService.GetPublicInfo`, and subscribe to `MetaService.SubForNotifications` to
-  capture each `MetaMissionBag` as it lands. This is the version that gives full match
-  history with per-opponent MMR - and the version that needs an explicit decision.
+  `MetaService.GetPublicInfo`. Best run with the game closed to avoid session collision;
+  gives career stats, live MMR, leaderboards and arbitrary-player lookup, plus whatever
+  single bag is currently in the slot.
 
 ### Phase 5 - Serve it
 

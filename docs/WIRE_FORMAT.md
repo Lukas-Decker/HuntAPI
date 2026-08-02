@@ -178,13 +178,43 @@ failures and stops there; application errors ride in per-service messages):
 
 `BaseProtocolMismatch` is what a wrong `protocol_version` or `game_version` produces.
 
-## 8. What is still unknown
+## 8. Transport security - measured
+
+Probed directly against `capi1-lv-eu.huntshowdown.com:61088` (no game, no account):
+
+* The front-end **speaks TLS 1.3** (`TLS_AES_128_GCM_SHA256`) and waits for the client
+  to send first - no unprompted greeting.
+* Its certificate is **not signed by a public CA**; validation against the system trust
+  store fails with `unable to get local issuer certificate`. A PEM certificate is baked
+  into `GameHunt.dll`, and the binary uses the Windows `Cert*` store APIs, so the PC
+  client validates the server against its own embedded trust anchor.
+* `GameHunt.dll` contains **no `SSLKEYLOGFILE` string and no keylog callback**, so the
+  game will not export TLS secrets through the standard OpenSSL channel.
+* **EasyAntiCheat is present** in the install.
+
+## 9. Getting plaintext (the gated step)
+
+Because the stream is TLS 1.3, a raw packet capture is ciphertext. Turning it into the
+`MetaMissionBag` blobs that `huntapi ingest` consumes needs the TLS session keys, and
+every route to them touches the anti-cheat-protected game process. There is **no
+genuinely passive, zero-risk method**; the honest options, worst-understood risk first:
+
+| Method | Gets keys by | Risk |
+|---|---|---|
+| Inject into `HuntGame.exe`, hook OpenSSL key schedule | writing to the protected process | EAC almost certainly flags it; ban exposure |
+| Read TLS secrets from game process memory | `OpenProcess` on the protected process | EAC may block the handle; ban exposure |
+| MITM proxy with a forged server cert | not possible without the CA private key, or a binary patch to skip validation | patching trips EAC integrity checks; cert is pinned to a private CA |
+| Active client of our own (see Phase 4b) | we hold our own TLS session, no capture needed | ToS; likely session collision with the running game |
+
+The decoder (`huntapi/wire/mission_bag.py`) and the storage schema are built and tested
+against synthetic bags, so they are ready for real bytes the moment a keying method is
+chosen. **Choosing that method is a user decision with ban implications and is
+deliberately not automated.**
+
+## 10. Still unknown (answerable once plaintext is in hand)
 
 1. The outer framing around `ReqHeader` - length prefix format, and whether a magic or
    version byte precedes it.
-2. Whether the stream is TLS and, if so, which cert validation the client performs.
-3. Compression, and how `ChannelInfo.max_part_size` splitting is encoded.
-4. The concrete `grain_id` values for each service.
-
-All four are answerable from a passive capture of the game's own traffic. None of them
-require guessing.
+2. Compression, and how `ChannelInfo.max_part_size` splitting is encoded.
+3. The concrete `grain_id` values for each service.
+4. The live RPC id table - though `GetProtocolInfo` hands this over directly (section 4).
