@@ -1,5 +1,9 @@
 # HuntAPI - plan
 
+> **Status:** Phases 1, 2 and 3 are implemented and committed (v0.3.0). Phase 4 is the
+> gated one and has not been started - it needs the terms-of-service decision in
+> section 2 below. Phase 5 is unblocked and can follow whenever.
+
 Goal: capture everything Hunt: Showdown 1896 knows about a player (stats, MMR, match
 results, progression) by speaking the game's own client API, and expose it as a local
 API/database that tools can build on.
@@ -146,11 +150,9 @@ tracker.
 
 ## 3. Plan
 
-### Phase 1 - Land the schema (no risk, done in prototype)
+### Phase 1 - Land the schema (no risk) - DONE
 
-The extractor is written and proven; it recovers 94/94 descriptors in about three
-minutes. Currently at
-`%TEMP%\claude\...\scratchpad\dump_fds.py` with output in `scratchpad/protos/`.
+Recovers 100/100 descriptors in 0.25s and the output compiles clean under protoc.
 
 - `tools/dump_protos.py` - scan `GameHunt.dll` for `FileDescriptorProto` blobs
   (`0x0A`, varint len, name ending `.proto`), parse, re-render as `.proto` source.
@@ -163,7 +165,7 @@ minutes. Currently at
 
 Deliverable: a versioned, machine-readable description of the entire Hunt client API.
 
-### Phase 2 - Local sources, no network
+### Phase 2 - Local sources, no network - DONE
 
 Everything obtainable without touching Crytek's servers, so there is a working tool even
 if Phase 4 never happens.
@@ -177,7 +179,7 @@ if Phase 4 never happens.
 - SQLite store: `profiles`, `snapshots`, `sessions`, `events`. Snapshot-diffing
   attributes.xml between sessions already yields "what you unlocked this session".
 
-### Phase 3 - Static endpoint and schema intelligence
+### Phase 3 - Static endpoint and schema intelligence - DONE
 
 - `huntapi/config.py` - fetch and cache `config.huntshowdown.com/v1/live/endpoints.json`,
   expose the region list, ping the front-ends. Purely public data; useful on its own as a
