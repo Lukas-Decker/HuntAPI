@@ -1,8 +1,9 @@
 # HuntAPI - plan
 
-> **Status:** Phases 1, 2 and 3 are implemented and committed (v0.3.0). Phase 4 is the
-> gated one and has not been started - it needs the terms-of-service decision in
-> section 2 below. Phase 5 is unblocked and can follow whenever.
+> **Status (v0.5.0):** Phases 1, 2, 3 and 5 are implemented and committed, along with
+> Phase 4's decoder and storage. Two things are deliberately not done: capturing real
+> mission bags (no zero-risk method exists under TLS 1.3 + EAC) and the 4b active client
+> (cannot be verified without sending your credentials to Crytek from a non-game client).
 
 Goal: capture everything Hunt: Showdown 1896 knows about a player (stats, MMR, match
 results, progression) by speaking the game's own client API, and expose it as a local
@@ -226,14 +227,23 @@ What is **gated on a keying decision** (has ban implications, not automated):
   gives career stats, live MMR, leaderboards and arbitrary-player lookup, plus whatever
   single bag is currently in the slot.
 
-### Phase 5 - Serve it
+### Phase 5 - Serve it - DONE
 
-- `huntapi/api.py` - local FastAPI: `/profile`, `/stats`, `/matches`,
-  `/matches/{id}`, `/leaderboard`, `/players/{profile_id}`, `/servers`.
-- Join through to Hunt-ify: a match's weapon ids resolve to real ballistics, a
-  mission template resolves to the POI map. That is the payoff of the two repos sitting
-  side by side.
-- Optional web UI reusing Hunt-ify's `usecases/` viewer pattern.
+- `huntapi/api.py` - local read-only FastAPI on `127.0.0.1:8848`: `/stats`, `/matches`,
+  `/history`, `/history/{key}`, `/players`, `/players/{profile_id}`, `/unlocks`,
+  `/items/{simple_id}`, `/servers`, `/health`. Every route covered by
+  `tests/test_api.py` and verified live against the real 363-match database.
+- Hunt-ify join implemented: `/items/{simple_id}` returns the full catalog record
+  including ballistics, so match and unlock ids resolve to real weapons.
+- Not done: the optional web UI, and `/leaderboard` (needs the live client, Phase 4b).
+
+### Phase 4b - active client (not started)
+
+Deliberately left alone. It cannot be completed without sending your credentials to
+Crytek from a non-game client, and its first blocker - the outer framing - is not
+statically recoverable, so it would need either EAC-touching key extraction or
+trial-and-error probing of the live front-end. See section 2 and WIRE_FORMAT.md
+sections 9-10.
 
 ---
 

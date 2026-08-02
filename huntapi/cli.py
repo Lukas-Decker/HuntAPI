@@ -176,6 +176,17 @@ def cmd_servers(args) -> int:
     return 0
 
 
+def cmd_serve(args) -> int:
+    import uvicorn
+
+    from .api import create_app
+
+    app = create_app(db_path=args.db, items_dir=args.items, endpoint_cache=args.cache)
+    print(f"serving http://{args.host}:{args.port}  (docs at /docs)")
+    uvicorn.run(app, host=args.host, port=args.port, log_level="info")
+    return 0
+
+
 def cmd_watch(args) -> int:
     game = paths.resolve(args.game)
     print(f"following {game.game_log} (ctrl-c to stop)")
@@ -232,6 +243,13 @@ def build_parser() -> argparse.ArgumentParser:
     watch = sub.add_parser("watch", help="follow Game.log live")
     watch.add_argument("--game")
     watch.set_defaults(func=cmd_watch)
+
+    serve = sub.add_parser("serve", help="run the local HTTP API")
+    serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--port", type=int, default=8848)
+    serve.add_argument("--items", type=Path, help="Hunt-ify structured/items directory")
+    serve.add_argument("--cache", default=DEFAULT_CACHE)
+    serve.set_defaults(func=cmd_serve)
     return ap
 
 

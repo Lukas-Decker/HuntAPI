@@ -76,6 +76,31 @@ Other commands:
 | `watch` | follow `Game.log` as you play |
 | `ingest <blob>` | decode a raw `MetaMissionBag` into full match history |
 | `history` | list decoded matches: map, duration, mode, death, PvP rating, players |
+| `serve` | run the local HTTP API on `127.0.0.1:8848` |
+
+## The local API
+
+```bash
+python -m huntapi serve
+```
+
+Read-only, bound to localhost, serving what you already collected. Interactive docs at
+`/docs`.
+
+| Route | Returns |
+|---|---|
+| `/stats` | headline aggregates: matches, playtime, K/D, distinct opponents |
+| `/matches` | match lifecycle from `Game.log` - time, map, duration, region, server |
+| `/history` | full decoded match records |
+| `/history/{key}` | one match with every player and a timestamped kill graph |
+| `/players` | opponents aggregated by profile, with average and peak MMR |
+| `/players/{profile_id}` | one opponent's history against you |
+| `/unlocks` | owned unlocks from the latest snapshot, resolved to item names |
+| `/items/{simple_id}` | the full Hunt-ify record, including ballistics |
+| `/servers?ping=true` | live front-ends by region, optionally timed |
+
+`/items/{simple_id}` is the Hunt-ify join: an id out of a match or an unlock comes back
+as a real weapon with its damage, muzzle velocity, rate of fire and ammo variants.
 
 `unlocks` resolves numeric ids to real names through Hunt-ify's item catalog, so a diff
 reads `Unlocks/0/1001  Crimson Varnish` rather than a bare integer.
@@ -93,13 +118,18 @@ HuntAPI/
 ├─ tools/
 │  ├─ dump_protos.py        # GameHunt.dll -> .proto
 │  ├─ diff_protos.py        # schema diff between two game builds
+│  ├─ gen_bindings.py       # proto/ -> huntapi/pb python bindings
 │  └─ gen_api_surface.py    # descriptors -> docs/API_SURFACE.md
+├─ tests/                   # decoder round-trip + API route coverage
 └─ huntapi/
    ├─ paths.py              # find the install and the files it writes
-   ├─ catalog.py            # id -> item name, via Hunt-ify
+   ├─ catalog.py            # id -> item name and full record, via Hunt-ify
    ├─ config.py             # public endpoint discovery
    ├─ store.py              # SQLite
+   ├─ api.py                # local read-only HTTP API
    ├─ cli.py
+   ├─ pb/                   # generated protobuf bindings (not committed)
+   ├─ wire/                 # MetaMissionBag decoder
    └─ sources/              # attributes.xml, Game.log
 ```
 
@@ -138,6 +168,9 @@ Two things are worth knowing before you count on this:
 
 ## Status
 
-Phases 1-3 of [PLAN.md](PLAN.md) are done: schema recovery, local sources, endpoint
-intelligence. Phase 4's decoder and storage are done and tested; the capture step and the
-active client are gated on a keying decision with ban implications, explained in the plan.
+Phases 1, 2, 3 and 5 are done: schema recovery, local sources, endpoint intelligence and
+the local API. Phase 4's decoder and storage are done and tested.
+
+Not done, by choice: capturing real mission bags (no zero-risk method exists under
+TLS 1.3 + EAC) and the Phase 4b active client (cannot be verified without sending your
+credentials to Crytek from a non-game client). Both are explained in [PLAN.md](PLAN.md).

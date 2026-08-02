@@ -12,6 +12,10 @@ from .sources.gamelog import Match
 
 SCHEMA_VERSION = 1
 
+# Your own row is in bag_players too (flagged proximity_to_me), and bots carry
+# profile_id 0. Neither counts as an opponent.
+OPPONENT_FILTER = "profile_id != 0 AND proximity_to_me = 0"
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS meta (
     key   TEXT PRIMARY KEY,
@@ -271,3 +275,75 @@ class Store:
             "SELECT * FROM bag_players WHERE match_key = ? ORDER BY team_index, mm_rating DESC",
             (match_key,),
         ).fetchall()
+
+    def bag(self, match_key: str) -> sqlite3.Row | None:
+        return self.db.execute("SELECT * FROM bags WHERE key = ?", (match_key,)).fetchone()
+
+    def bag_kills(self, match_key: str) -> list[sqlite3.Row]:
+        return self.db.execute(
+            "SELECT * FROM bag_kills WHERE match_key = ? ORDER BY mission_time_s", (match_key,)
+        ).fetchall()
+
+    def opponents(self, min_appearances: int = 1, limit: int = 100) -> list[sqlite3.Row]:
+        """Players seen across decoded bags, aggregated - who you meet and their rating."""
+        return self.db.execute(
+            "SELECT profile_id, "
+            "       MAX(blood_line_name) AS blood_line_name, "
+            "       MAX(is_bot) AS is_bot, "
+            "       COUNT(*) AS appearances, "
+            "       CAST(AVG(mm_rating) AS INTEGER) AS avg_mm_rating, "
+            "       MAX(mm_rating) AS max_mm_rating, "
+            "       SUM(killed_by_me) AS times_i_killed_them, "
+            "       SUM(killed_me) AS times_they_killed_me "
+            f"FROM bag_players WHERE {OPPONENT_FILTER} "
+            "GROUP BY profile_id HAVING appearances >= ? "
+            "ORDER BY appearances DESC, avg_mm_rating DESC LIMIT ?",
+            (min_appearances, limit),
+        ).fetchall()
+
+    def player(self, profile_id: int) -> sqlite3.Row | None:
+        rows = self.opponents(min_appearances=1, limit=1_000_000)
+        for row in rows:
+            if row["profile_id"] == profile_id:
+                return row
+        return None
+
+    def stats(self) -> dict:
+        """Headline aggregates across everything collected."""
+        cur = self.db.execute
+        bag_agg = cur(
+            "SELECT COUNT(*) AS matches, "
+            "       SUM(CASE WHEN dead THEN 1 ELSE 0 END) AS deaths, "
+            "       SUM(mission_duration_s) AS total_s, "
+            "       MAX(skill_based_pvp_rating) AS peak_pvp_rating "
+            "FROM bags"
+        ).fetchone()
+        kills = cur(
+            f"SELECT SUM(killed_by_me) AS k, SUM(killed_me) AS d "
+            f"FROM bag_players WHERE {OPPONENT_FILTER}"
+        ).fetchone()
+        k = kills["k"] or 0
+        d = kills["d"] or 0
+        return {
+            "log_matches": self.count_matches(),
+            "decoded_matches": bag_agg["matches"] or 0,
+            "decoded_deaths": bag_agg["deaths"] or 0,
+            "decoded_playtime_h": round((bag_agg["total_s"] or 0) / 3600, 1),
+            "peak_pvp_rating": bag_agg["peak_pvp_rating"] or 0,
+            "player_kills": k,
+            "player_deaths": d,
+            "kd_ratio": round(k / d, 2) if d else float(k),
+            "distinct_opponents": cur(
+                    f"SELECT COUNT(DISTINCT profile_id) FROM bag_players WHERE {OPPONENT_FILTER}"
+            ).fetchone()[0],
+        }
+
+    def latest_snapshot_unlocks(self) -> dict[str, str]:
+        rows = self.snapshots()
+        if not rows:
+            return {}
+        return {
+            name: value
+            for name, value in self.snapshot_attrs(rows[-1]["id"]).items()
+            if name.startswith("Unlocks/")
+        }

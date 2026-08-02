@@ -51,11 +51,13 @@ class Catalog:
         return self.items_dir is not None and self.items_dir.is_dir()
 
     @cached_property
-    def _loaded(self) -> tuple[dict[int, Item], dict[int, Item]]:
+    def _loaded(self) -> tuple[dict[int, Item], dict[int, Item], dict[int, dict], dict[int, dict]]:
         by_simple: dict[int, Item] = {}
         by_hex: dict[int, Item] = {}
+        raw_simple: dict[int, dict] = {}   # full Hunt-ify record, for the ballistics join
+        raw_hex: dict[int, dict] = {}
         if not self.available:
-            return by_simple, by_hex
+            return by_simple, by_hex, raw_simple, raw_hex
         for path in sorted(self.items_dir.glob("*.json")):
             try:
                 data = json.loads(path.read_text(encoding="utf-8", errors="replace"))
@@ -81,11 +83,14 @@ class Catalog:
                     rarity=entry.get("rarity"),
                     legendary=bool(entry.get("legendary", False)),
                 )
+                enriched = {"kind": kind, **entry}
                 if item.simple_id is not None:
                     by_simple.setdefault(item.simple_id, item)
+                    raw_simple.setdefault(item.simple_id, enriched)
                 if item.hex_id is not None:
                     by_hex.setdefault(item.hex_id, item)
-        return by_simple, by_hex
+                    raw_hex.setdefault(item.hex_id, enriched)
+        return by_simple, by_hex, raw_simple, raw_hex
 
     def by_simple_id(self, simple_id: int) -> Item | None:
         return self._loaded[0].get(simple_id)
@@ -93,6 +98,12 @@ class Catalog:
     def by_hex_id(self, hex_id: int) -> Item | None:
         return self._loaded[1].get(hex_id)
 
+    def record_by_simple_id(self, simple_id: int) -> dict | None:
+        """The full Hunt-ify record, including ballistics/stats where present."""
+        return self._loaded[2].get(simple_id)
+
+    def record_by_hex_id(self, hex_id: int) -> dict | None:
+        return self._loaded[3].get(hex_id)
+
     def __len__(self) -> int:
-        simple, hexed = self._loaded
-        return len(simple) + len(hexed)
+        return len(self._loaded[0]) + len(self._loaded[1])

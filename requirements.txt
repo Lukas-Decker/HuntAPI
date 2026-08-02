@@ -1,2 +1,4 @@
 grpcio-tools>=1.60
 protobuf>=4.25
+fastapi>=0.110
+uvicorn[standard]>=0.27
