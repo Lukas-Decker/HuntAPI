@@ -18,9 +18,9 @@ Hunt-ify answers "what exists in the game". HuntAPI answers "what happened to me
 ### 1.1 The client API is protobuf over a custom TCP protocol
 
 `bin/win_x64/GameHunt.dll` embeds the complete set of protobuf file descriptors for
-Crytek's client API. They are recoverable in full - **94 descriptors parsed, 88 Hunt
-`.proto` files, 32 services, 151 RPCs** - because the protobuf C++ runtime stores each
-`FileDescriptorProto` as a serialised blob inside the binary.
+Crytek's client API. They are recoverable in full - **100 descriptors parsed, 89 Hunt
+`.proto` files, 32 services, 151 RPCs, 383 messages** - because the protobuf C++ runtime
+stores each `FileDescriptorProto` as a serialised blob inside the binary.
 
 The Go package annotation on every file is `huntshowdown.com/crystack/clientapi`, and
 the C++ package is `FP` / `FP.Hunt` ("FP" = the CryStack front-plane). So the backend is
@@ -137,9 +137,12 @@ assumption.
 2. **The Steam auth ticket has to come from somewhere.** Legitimately it comes from
    `ISteamUser::GetAuthSessionTicket` for app 594650, which requires a running Steam
    client owning the game. That part is ordinary Steamworks usage.
-3. **The framing is undocumented.** The `.proto` messages are recovered, but the bytes
-   *around* them (length prefix, message-id-to-RPC mapping, TLS or not, compression,
-   handshake) are not. That is the one genuine reverse-engineering task left.
+3. **The framing is undocumented, but smaller than it looked.** The `.proto` messages are
+   recovered; the bytes *around* them are not - the outer length delimiter, whether the
+   stream is TLS, and how `max_part_size` splitting is encoded. The RPC id table, which
+   looked like the big unknown, is not one: `ProtocolMetadata.GetProtocolInfo` is a
+   pre-auth system call (`invoking_id 0x1000002`) that returns every RPC's name, id and
+   channel. See [docs/WIRE_FORMAT.md](docs/WIRE_FORMAT.md).
 
 **My recommendation:** build it in the order below, which front-loads all the value that
 carries no risk, and treat the live-client work as an explicitly gated Phase 4 you decide
