@@ -174,3 +174,9 @@ the local API. Phase 4's decoder and storage are done and tested.
 Not done, by choice: capturing real mission bags (no zero-risk method exists under
 TLS 1.3 + EAC) and the Phase 4b active client (cannot be verified without sending your
 credentials to Crytek from a non-game client). Both are explained in [PLAN.md](PLAN.md).
+
+## License
+
+The code in this repository is MIT-licensed, see [LICENSE](LICENSE). Unofficial fan
+project: not affiliated with or endorsed by Crytek. Hunt: Showdown 1896 and all game
+content are the property of Crytek GmbH.
